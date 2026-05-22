@@ -1,0 +1,17 @@
+<aside class="sidebar">
+  <a href="/admin"{% if admin_nav == 'dashboard' %} class="active"{% endif %}>لوحة التحكم</a>
+  <a href="/admin/system"{% if admin_nav == 'system' %} class="active"{% endif %}>إعدادات السيرفر</a>
+  <a href="/admin/applications"{% if admin_nav == 'applications' %} class="active"{% endif %}>طلبات الانضمام</a>
+  <a href="/admin/quiz-review"{% if admin_nav == 'quiz' %} class="active"{% endif %}>اختبار الوعي</a>
+  <a href="/admin/users"{% if admin_nav == 'users' %} class="active"{% endif %}>إدارة الأعضاء</a>
+  <a href="/admin/audit-log"{% if admin_nav == 'audit' %} class="active"{% endif %}>سجل التدقيق</a>
+  <a href="/admin/owner-messages"{% if admin_nav == 'owner' %} class="active"{% endif %}>مراسلة الأعضاء</a>
+  <a href="/admin/nav-menus"{% if admin_nav == 'nav' %} class="active"{% endif %}>قوائم التنقل</a>
+  <a href="/admin/permissions"{% if admin_nav == 'permissions' %} class="active"{% endif %}>صلاحيات الموارد</a>
+  <a href="/admin/newsletter"{% if admin_nav == 'newsletter' %} class="active"{% endif %}>جرعات الوعي</a>
+  <a href="/admin/library/manage"{% if admin_nav == 'library' %} class="active"{% endif %}>المكتبة</a>
+  <a href="/admin/knowledge"{% if admin_nav == 'knowledge' %} class="active"{% endif %}>أرشيف المعرفة</a>
+  <a href="/community/moderation">مراجعة المجتمع</a>
+  <a href="/market/manage">إدارة الأسواق</a>
+  <a href="/designer">المصمم</a>
+</aside>

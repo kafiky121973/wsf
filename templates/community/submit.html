@@ -1,0 +1,48 @@
+﻿{% extends "base.html" %}
+{% block title %}رفع شهادة{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/gallery.css">
+{% endblock %}
+{% block content %}
+<div class="wrap form-narrow page-pad">
+  <nav class="gallery-breadcrumb">
+    <a href="/gallery">معرض الشهادات</a> / <span>رفع محتوى</span>
+  </nav>
+
+  <h1 class="page-title">رفع شهادة أو فيديو</h1>
+
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>النوع</label>
+        <select name="post_type">
+          <option value="testimony">شهادة</option>
+          <option value="video">فيديو</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>العنوان</label>
+        <input name="title">
+      </div>
+
+      <div class="form-group">
+        <label>المحتوى / الوصف <span class="label-required">*</span></label>
+        <textarea name="content" required rows="6"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>رابط YouTube</label>
+        <input name="youtube_url" type="url">
+      </div>
+
+      <div class="form-group">
+        <label>ملف صورة أو فيديو</label>
+        <input type="file" name="media_file" accept="image/*,video/mp4,video/webm,video/quicktime">
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-block btn-tall">إرسال للمراجعة</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

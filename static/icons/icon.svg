@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="شفرة الفطرة">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E8D48B"/>
+      <stop offset="50%" stop-color="#C9A227"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#0D0B08"/>
+  <path fill="url(#g)" d="M256 72 L392 160 V304 C392 384 336 432 256 456 C176 432 120 384 120 304 V160 Z"/>
+  <text x="256" y="290" text-anchor="middle" font-family="serif" font-size="120" font-weight="700" fill="#1A1510">&#x0634;</text>
+</svg>

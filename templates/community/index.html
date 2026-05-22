@@ -1,0 +1,45 @@
+﻿{% extends "base.html" %}
+{% block title %}مجتمع الخلفاء{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/community.css">
+{% endblock %}
+{% block content %}
+<div class="wrap community-page">
+  <header class="community-hero">
+    <h1 class="page-title">مجتمع الخلفاء</h1>
+  </header>
+
+  <a href="/community/journal" class="community-journal-cta">
+    <span class="cta-icon-lg">📓</span>
+    <div>
+      <strong>مفكرة الإنجاز</strong>
+    </div>
+    <span class="btn btn-gold btn-sm ms-auto">افتح المفكرة</span>
+  </a>
+
+  <div class="community-actions">
+    <a href="/gallery" class="btn btn-gold btn-sm">معرض الشهادات (عام)</a>
+    <a href="/community/journal/new" class="btn btn-outline btn-sm">+ إدخال اليوم</a>
+    {% if current_user and current_user.status == 'active' %}
+    <a href="/community/submit" class="btn btn-outline btn-sm">رفع شهادة / فيديو (عضو)</a>
+    {% endif %}
+    {% if current_user.role in ['supervisor','admin'] %}
+    <a href="/community/moderation" class="btn btn-outline btn-sm">مراجعة الرقباء</a>
+    {% endif %}
+  </div>
+
+  <h2 class="section-title-sm">شهادات معتمدة</h2>
+  {% for p in posts %}
+  <div class="card post-card">
+    <h3>{{ p.title or 'شهادة' }}</h3>
+    <p class="post-meta signature">— {{ p.full_name or p.username }} · {{ p.created_at | fmtDateTime }}</p>
+    <p class="post-body">{{ p.content }}</p>
+    <a href="/gallery/{{ p.id }}" class="btn btn-outline btn-sm post-link-mt">عرض في المعرض</a>
+  </div>
+  {% else %}
+  <div class="card">
+    <p class="text-empty">لا مشاركات معتمدة.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+﻿{% extends "base.html" %}
+{% block title %}مراجعة الرقباء{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">مراجعة الرقباء</h1>
+  {% for p in posts %}
+  <div class="card">
+    <h3>{{ p.title or 'مشاركة' }} — {{ p.username }} <span class="level-badge">{{ p.post_type }}</span></h3>
+    <p>{{ p.content }}</p>
+    {% if p.youtube_url %}<p class="text-muted-sm">YouTube: {{ p.youtube_url }}</p>{% endif %}
+    {% if p.media_path %}<p class="text-muted-sm">ملف: {{ p.media_path }}</p>{% endif %}
+    <div class="action-row">
+    <form method="post" action="/community/moderation/{{ p.id }}/approved">
+      <button class="btn btn-gold btn-sm">قبول</button>
+    </form>
+    <form method="post" action="/community/moderation/{{ p.id }}/rejected">
+      <input type="hidden" name="note" value="مرفوض">
+      <button class="btn btn-outline btn-sm">رفض</button>
+    </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-empty">لا طلبات معلقة.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+

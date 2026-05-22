@@ -1,0 +1,29 @@
+﻿{% extends "base.html" %}
+{% block title %}مراجعة اختبار الوعي{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/quiz-review">اختبار الوعي</a>
+    <a href="/admin/users">المستخدمون</a>
+    <a href="/community/moderation">مراجعة المجتمع</a>
+  </aside>
+  <section>
+    <h1 class="page-title">مراجعة اختبار الوعي</h1>
+    {% for u in pending %}
+    <div class="card card-row">
+      <div>
+        <strong>{{ u.full_name or u.username }}</strong> — {{ u.email }}<br>
+        <small class="text-muted-sm">
+          أُرسل: {{ u.quiz_passed_at | fmtDateTime if u.quiz_passed_at else '—' }}
+          · {{ u.answer_count }} إجابة
+        </small>
+      </div>
+      <a href="/admin/quiz-review/{{ u.id }}" class="btn btn-gold btn-sm">قراءة الإجابات</a>
+    </div>
+    {% else %}
+    <p class="text-empty">لا طلبات بانتظار المراجعة.</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

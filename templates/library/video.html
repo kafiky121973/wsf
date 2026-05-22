@@ -1,0 +1,55 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ video.title }} — مكتبة الوعي{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/library.css">
+{% endblock %}
+{% block content %}
+<div class="wrap library-page">
+  <header class="library-level-head">
+    <span class="level-badge">{{ video.level_name }} — المستوى {{ video.level_number }}</span>
+    <h1 class="page-title">{{ video.title }}</h1>
+    {% if video.description %}<p class="library-tagline">{{ video.description }}</p>{% endif %}
+    <p class="text-muted-sm">{{ video.category_name }} · {{ formatDuration(video.duration_seconds) }}</p>
+  </header>
+
+  <div class="card video-player-wrap">
+    {% set ytId = youtubeEmbedId(video.youtube_url) %}
+    {% if ytId %}
+    <div class="video-embed">
+      <iframe id="yt-player" src="https://www.youtube.com/embed/{{ ytId }}?rel=0&enablejsapi=1" allowfullscreen allow="accelerometer; autoplay; encrypted-media; picture-in-picture"></iframe>
+    </div>
+    {% elif video.video_path %}
+    <video id="local-player" controls class="video-player" src="/uploads/{{ video.video_path }}"></video>
+    {% else %}
+    <p class="text-empty">لا يوجد رابط فيديو بعد — يمكنك قراءة مقاطع النص أدناه أو العودة لاحقاً.</p>
+    {% endif %}
+  </div>
+
+  {% if segments %}
+  <section class="card">
+    <h2 class="section-title-sm">مقاطع النص — اضغط للانتقال</h2>
+    <div class="segment-list">
+      {% for s in segments %}
+      <button type="button" class="segment-row" data-seek="{{ s.start_seconds }}">
+        <span class="ts">{{ formatDuration(s.start_seconds) }}</span>
+        <span class="segment-text">{{ s.text }}</span>
+      </button>
+      {% endfor %}
+    </div>
+  </section>
+  {% elif video.transcript_text %}
+  <section class="card">
+    <h2 class="section-title-sm">نص الفيديو</h2>
+    <p class="video-desc">{{ video.transcript_text }}</p>
+  </section>
+  {% endif %}
+
+  <div class="library-actions-row mt-md">
+    <a href="/library/level/{{ video.level_number }}" class="btn btn-outline">← العودة للمستوى</a>
+    <a href="/library/search" class="btn btn-outline">بحث في الأرشيف</a>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/library-video.js"></script>
+{% endblock %}

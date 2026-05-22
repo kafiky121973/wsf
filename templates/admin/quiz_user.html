@@ -1,0 +1,42 @@
+﻿{% extends "base.html" %}
+{% block title %}إجابات {{ user.username }}{% endblock %}
+{% block content %}
+<div class="wrap page-quiz-admin">
+  <a href="/admin/quiz-review" class="btn btn-outline btn-sm btn-back">← العودة للقائمة</a>
+  <h1 class="page-title">إجابات اختبار الوعي — {{ user.full_name or user.username }}</h1>
+  <p class="muted-block mb-lg">{{ user.email }} · {{ user.username }}</p>
+
+  {% for a in answers %}
+  <div class="card">
+    <h3 class="step-title">{{ a.order_num + 1 }}. {{ a.question }}</h3>
+    <div class="ai-response ai-response-mt">{{ a.answer_text }}</div>
+    <small class="text-muted">{{ a.answer_text | length }} حرفاً</small>
+  </div>
+  {% else %}
+  <p class="text-empty">لم يُرسل إجابات بعد.</p>
+  {% endfor %}
+
+  {% if answers %}
+  <div class="card card-top-gap">
+    <h3>قرار رفيق السيادة</h3>
+    <form method="post" action="/admin/users/{{ user.id }}/approve" class="mb-md">
+      {% include "partials/csrf.html" %}
+      <input type="hidden" name="return_to" value="/admin/quiz-review">
+      <div class="form-group">
+        <label>ملاحظة (اختياري)</label>
+        <input name="note" placeholder="وافق على الجدية — أهلاً في الحصن">
+      </div>
+      <button type="submit" class="btn btn-gold">✓ قبول وتفعيل العضوية</button>
+    </form>
+    <form method="post" action="/admin/quiz-review/{{ user.id }}/reject">
+      {% include "partials/csrf.html" %}
+      <div class="form-group">
+        <label>سبب الرفض (يُعرض للمستخدم)</label>
+        <textarea name="note" rows="2" placeholder="عمّق إجاباتك وأعد الإرسال..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-outline">رفض وإعادة الاختبار</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

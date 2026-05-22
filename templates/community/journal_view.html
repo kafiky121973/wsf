@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.title or 'يومية' }}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/community.css">
+{% endblock %}
+{% block content %}
+<div class="wrap community-page form-narrow">
+  <nav class="community-breadcrumb">
+    <a href="/community">المجتمع</a> /
+    <a href="/community/journal">مفكرة الإنجاز</a> /
+    <span>{{ entry.title or 'يومية' }}</span>
+  </nav>
+
+  <header class="journal-view-head">
+    <h1 class="page-title">{{ entry.title or 'يومية' }}</h1>
+    <div class="journal-view-meta">
+      {% if entry.day_number %}<span class="level-badge">يوم {{ entry.day_number }} / 40</span>{% endif %}
+      <time>{{ entry.created_at | fmtDateTime }}</time>
+      {% if entry.mood %}<span class="mood-badge {{ entry.mood | moodClass }}">{{ entry.mood | moodIcon }} {{ entry.mood }}</span>{% endif %}
+    </div>
+  </header>
+
+  <div class="card journal-view-body">
+    <section class="journal-section">
+      <h2>اليوميات</h2>
+      <p class="journal-content">{{ entry.content }}</p>
+    </section>
+
+    {% if entry.food_log %}
+    <section class="journal-section">
+      <h2>🍽 الطعام</h2>
+      <p class="journal-content">{{ entry.food_log }}</p>
+    </section>
+    {% endif %}
+
+    {% if entry.health_notes %}
+    <section class="journal-section">
+      <h2>💚 الصحة</h2>
+      <p class="journal-content">{{ entry.health_notes }}</p>
+    </section>
+    {% endif %}
+
+    {% if entry.obstacles %}
+    <section class="journal-section">
+      <h2>⚡ العقبات</h2>
+      <p class="journal-content">{{ entry.obstacles }}</p>
+    </section>
+    {% endif %}
+
+    {% if entry.updated_at %}
+    <p class="journal-updated">آخر تعديل: {{ entry.updated_at | fmtDateTime }}</p>
+    {% endif %}
+  </div>
+
+  <div class="journal-view-actions">
+    <a href="/community/journal/{{ entry.id }}/edit" class="btn btn-gold">تعديل</a>
+    <a href="/community/journal" class="btn btn-outline">← كل السجلات</a>
+    <form method="post" action="/community/journal/{{ entry.id }}/delete" onsubmit="return confirm('حذف هذا السجل نهائياً؟');">
+      <button type="submit" class="btn btn-outline">حذف</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}إعدادات السيرفر{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  {% include "partials/admin_sidebar.html" %}
+  <section>
+    <h1 class="page-title">إعدادات السيرفر</h1>
+    <p class="text-muted-sm mb-md">
+      يمكنك <strong>حفظ إعدادات البريد والموقع من هنا</strong> (تُخزَّن في القاعدة وتعمل فوراً)،
+      أو ضبطها في <strong>Hostinger → Environment Variables</strong>.
+      إعدادات لوحة الإدارة تتجاوز Hostinger عند التعارض.
+      <code>SECRET_KEY</code> يبقى في Hostinger فقط (أمان).
+    </p>
+
+    {% if can_edit %}
+    <div class="card mb-md">
+      <h2 class="h3">تعديل الإعدادات</h2>
+      <form method="post" action="/admin/system" class="system-settings-form">
+        {% include "partials/csrf.html" %}
+        <div class="form-group">
+          <label>رابط الموقع (SITE_URL)</label>
+          <input name="site_url" type="url" required value="{{ settings.site_url }}" placeholder="https://ark4all.com">
+        </div>
+        <div class="form-row-split">
+          <div class="form-group">
+            <label>SMTP_HOST</label>
+            <input name="smtp_host" value="{{ settings.smtp_host }}" placeholder="smtp.hostinger.com">
+          </div>
+          <div class="form-group">
+            <label>SMTP_PORT</label>
+            <input name="smtp_port" value="{{ settings.smtp_port }}" placeholder="587">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>SMTP_SECURE</label>
+          <select name="smtp_secure">
+            <option value="false"{% if settings.smtp_secure != 'true' %} selected{% endif %}>false (منفذ 587)</option>
+            <option value="true"{% if settings.smtp_secure == 'true' %} selected{% endif %}>true (منفذ 465)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>SMTP_USER</label>
+          <input name="smtp_user" value="{{ settings.smtp_user }}" placeholder="noreply@ark4all.com">
+        </div>
+        <div class="form-group">
+          <label>SMTP_PASS</label>
+          <input name="smtp_pass" type="password" autocomplete="new-password" placeholder="{% if settings.smtp_pass_set %}اتركه فارغاً للإبقاء على كلمة المرور الحالية{% else %}كلمة مرور صندوق noreply{% endif %}">
+        </div>
+        <div class="form-group">
+          <label>MAIL_FROM</label>
+          <input name="mail_from" value="{{ settings.mail_from }}" placeholder='"شفرة الفطرة" &lt;noreply@ark4all.com&gt;'>
+        </div>
+        <div class="form-group">
+          <label>مدة رابط تأكيد البريد (دقيقة)</label>
+          <input name="email_verify_ttl_minutes" type="number" min="5" max="1440" value="{{ settings.email_verify_ttl_minutes }}">
+        </div>
+        <button type="submit" class="btn btn-gold">حفظ الإعدادات</button>
+      </form>
+      <form method="post" action="/admin/system" class="mt-md" onsubmit="return confirm('إزالة إعدادات لوحة الإدارة والاعتماد على Hostinger فقط؟');">
+        {% include "partials/csrf.html" %}
+        <input type="hidden" name="action" value="clear">
+        <button type="submit" class="btn btn-outline btn-sm">إعادة الاعتماد على Hostinger فقط</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info mb-md">عرض فقط — التعديل متاح لدور <strong>مدير النظام</strong> (admin).</div>
+    {% endif %}
+
+    {% if system.summary.error > 0 %}
+    <div class="alert alert-danger mb-md" role="alert">
+      <strong>{{ system.summary.error }}</strong> إعداد إلزامي ناقص —
+      البريد والتسجيل قد لا يعملان حتى تُصلَح.
+    </div>
+    {% elif not system.summary.email_ready %}
+    <div class="alert alert-warning mb-md" role="alert">
+      البريد غير جاهز — عيّن SMTP_* و SITE_URL ثم أعد تشغيل التطبيق.
+    </div>
+    {% elif system.summary.ready %}
+    <div class="alert alert-success mb-md" role="alert">
+      الإعدادات الأساسية جاهزة. راجع التحذيرات الاختيارية إن وُجدت.
+    </div>
+    {% endif %}
+
+    <div class="stats-grid mb-md">
+      <div class="stat-box"><div class="num">{{ system.summary.ok }}</div><div class="lbl">سليم / معلومات</div></div>
+      <div class="stat-box"><div class="num">{{ system.summary.warn }}</div><div class="lbl">تحذير</div></div>
+      <div class="stat-box stat-box-online"><div class="num">{{ system.summary.error }}</div><div class="lbl">مطلوب إصلاح</div></div>
+    </div>
+
+    <div class="card mb-md">
+      <h2 class="h3">نسخ سريع لـ Hostinger</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>المتغير</th><th>القيمة المقترحة</th></tr></thead>
+          <tbody>
+            {% for row in system.hostinger_vars %}
+            <tr><td><code>{{ row.name }}</code></td><td>{{ row.value }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-muted-sm mt-md">
+        مرجع محلي: <code>deploy/env-ark4all.example</code> —
+        فحص API: <a href="{{ system.health_url }}" class="link-gold" target="_blank" rel="noopener">{{ system.health_url }}</a>
+        (يجب <code>"smtp":true</code> و <code>"site_url":"https://…"</code>)
+      </p>
+    </div>
+
+    {% for group in system.groups %}
+    <div class="card mb-md">
+      <h2 class="h3">{{ group.title }}</h2>
+      <div class="table-wrap">
+        <table class="data-table system-check-table">
+          <thead>
+            <tr><th>البند</th><th>الحالة</th><th>التفاصيل</th><th>ماذا تفعل</th></tr>
+          </thead>
+          <tbody>
+            {% for it in group.items %}
+            <tr class="system-row system-row--{{ it.status }}">
+              <td>
+                {% if it.env_var %}<code>{{ it.env_var }}</code>{% else %}{{ it.label }}{% endif %}
+              </td>
+              <td>
+                {% if it.status == 'ok' %}<span class="level-badge level-ok">جاهز</span>
+                {% elif it.status == 'warn' %}<span class="level-badge level-warn">تحذير</span>
+                {% elif it.status == 'error' %}<span class="level-badge level-error">مطلوب</span>
+                {% else %}<span class="level-badge">معلومة</span>{% endif %}
+              </td>
+              <td>{{ it.message }}</td>
+              <td class="text-muted-sm">{% if it.hint %}{{ it.hint }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}
+{% block extra_head %}
+<style>
+.system-row--error td { border-inline-start: 3px solid #c0392b; }
+.system-row--warn td { border-inline-start: 3px solid var(--gold); }
+.level-ok { color: #27ae60; border-color: #27ae60; }
+.level-warn { color: var(--gold-light); border-color: var(--gold); }
+.level-error { color: #e74c3c; border-color: #c0392b; }
+.system-check-table code { font-size: 0.85em; }
+.system-settings-form .form-row-split { display: grid; grid-template-columns: 1fr 120px; gap: 1rem; }
+@media (max-width: 600px) { .system-settings-form .form-row-split { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

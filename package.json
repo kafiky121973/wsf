@@ -1,0 +1,35 @@
+{
+  "name": "shifrat-al-fitra",
+  "version": "1.0.0",
+  "description": "شفرة الفطرة — Express Node.js app for Hostinger",
+  "main": "server.js",
+  "scripts": {
+    "build": "node scripts/ensure-assets.js",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "assets": "node scripts/ensure-assets.js",
+    "check-node": "node scripts/check-node.js",
+    "test-smtp": "node scripts/test-smtp.js",
+    "pack": "powershell -ExecutionPolicy Bypass -File scripts/pack-deploy.ps1"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "keywords": ["express", "node", "hostinger"],
+  "optionalDependencies": {
+    "sharp": "^0.33.5"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.18.1",
+    "ffprobe-static": "^3.1.0",
+    "multer": "^2.1.1",
+    "nodemailer": "^6.10.1",
+    "nunjucks": "^3.2.4",
+    "sql.js": "^1.14.1",
+    "web-push": "^3.6.7",
+    "xlsx": "^0.18.5"
+  }
+}

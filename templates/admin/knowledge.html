@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}بيانات المساعد{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/knowledge">بيانات المساعد</a>
+    <a href="/admin/library/manage">المكتبة</a>
+    <a href="/cadres">مساعدك</a>
+  </aside>
+  <section>
+    <h1 class="page-title">إدارة بيانات المساعد — rag_qa_mapping</h1>
+
+    <div class="stats-grid">
+      <div class="stat-box"><div class="num">{{ stats.qa_count }}</div><div class="lbl">سجل مساعد</div></div>
+      <div class="stat-box"><div class="num">{{ stats.articles }}</div><div class="lbl">مقالات أرشيف</div></div>
+      <div class="stat-box"><div class="num">{{ stats.videos }}</div><div class="lbl">فيديو</div></div>
+    </div>
+
+    <div class="card">
+      <h2>استيراد من Excel</h2>
+      <p class="text-muted-sm mb-md">
+        يدعم <strong>قالب المساعد</strong> (<code>id, title, stage, tags, user_question, optimized_answer, slug</code>)
+        و<strong>قالب المعرفة القديم</strong> (<code>العنوان, المحتوى, التصنيف, الوسوم, التوقيع الموثق, نشر</code>).
+      </p>
+      <a href="/admin/knowledge/template" class="btn btn-outline toolbar-btn">تحميل قالب المساعد (.xlsx)</a>
+      <form method="post" action="/admin/knowledge/import" enctype="multipart/form-data" class="mt-md">
+        <div class="form-group">
+          <label>ملف Excel</label>
+          <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+        </div>
+        <div class="form-group">
+          <label>وضع الاستيراد</label>
+          <select name="import_mode">
+            <option value="merge">دمج (تحديث حسب slug + إضافة جديد)</option>
+            <option value="replace">استبدال كامل (حذف القديم)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold">رفع وتحديث المساعد</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>إضافة سجل يدوياً</h2>
+      <form method="post" action="/admin/knowledge/qa/add">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>title</label>
+            <input name="title" required placeholder="فطور التمر والزبدة الفطرية">
+          </div>
+          <div class="form-group">
+            <label>slug</label>
+            <input name="slug" required placeholder="dates-butter-breakfast" pattern="[a-z0-9\-]+">
+          </div>
+          <div class="form-group">
+            <label>stage</label>
+            <select name="stage" required>
+              {% for s in stages %}
+              <option value="{{ s }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>tags</label>
+            <input name="tags" placeholder="فطور, تمر, زبدة, طاقة">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>user_question</label>
+          <input name="user_question" required placeholder="ماذا آكل في الفطور…؟">
+        </div>
+        <div class="form-group">
+          <label>optimized_answer</label>
+          <textarea name="optimized_answer" rows="5" required placeholder="الجواب الذي يظهر للمستخدم…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold">إضافة للمساعد</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>جدول البيانات ({{ qa_rows | length }})</h2>
+      <div class="table-wrap">
+        <table class="admin-data-table admin-segments-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>title</th>
+              <th>stage</th>
+              <th>tags</th>
+              <th>user_question</th>
+              <th>optimized_answer</th>
+              <th>slug</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for r in qa_rows %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.stage }}</td>
+            <td><small>{{ r.tags }}</small></td>
+            <td><small>{{ r.user_question | excerpt(80) }}</small></td>
+            <td><small>{{ r.optimized_answer | excerpt(120) }}</small></td>
+            <td><code>{{ r.slug }}</code></td>
+            <td>
+              <a href="/admin/knowledge/qa/{{ r.slug }}/edit" class="btn btn-gold btn-sm">تعديل</a>
+              {% if current_user.role == 'admin' or current_user.role == 'supervisor' %}
+              <form method="post" action="/admin/knowledge/qa/{{ r.slug }}/delete" class="form-inline" onsubmit="return confirm('حذف هذا السجل؟');">
+                <button type="submit" class="btn btn-outline btn-sm">حذف</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-empty">لا سجلات — حمّل القالب أو أضف يدوياً.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

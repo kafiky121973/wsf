@@ -1,0 +1,15 @@
+﻿{% extends "base.html" %}
+{% block title %}طلباتي{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">طلباتي</h1>
+  {% for o in orders %}
+  <div class="card">
+    <span class="level-badge">{{ o.status }}</span>
+    <p>{{ o.items_json }}</p>
+    {% if o.point_name %}<p>السوق: {{ o.point_name }} — {{ o.city }}</p>{% endif %}
+    <p class="text-muted-sm">{{ o.created_at | fmtDateTime }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

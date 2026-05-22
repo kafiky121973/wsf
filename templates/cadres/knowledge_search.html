@@ -1,0 +1,21 @@
+﻿{% extends "base.html" %}
+{% block title %}بحث المعرفة{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">بحث أرشيف المعرفة</h1>
+  <div class="card">
+    <form method="get" action="/cadres/knowledge/search">
+      <div class="form-group"><label>كلمة البحث</label><input name="q" value="{{ query }}" required></div>
+      <button type="submit" class="btn btn-gold mt-md">بحث</button>
+    </form>
+  </div>
+  {% for hit in results %}
+  <div class="search-hit card">
+    <strong>{{ hit.title }}</strong>
+    <span class="level-badge">{{ hit.type }}</span>
+    <p>{{ hit.excerpt }}</p>
+    {% if hit.signature %}<p class="signature">{{ hit.signature }}</p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

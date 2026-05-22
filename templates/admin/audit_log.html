@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}سجل التدقيق{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/applications">طلبات الانضمام</a>
+    <a href="/admin/quiz-review">اختبار الوعي</a>
+    <a href="/admin/users">إدارة الأعضاء</a>
+    <a href="/admin/audit-log" class="active">سجل التدقيق</a>
+  </aside>
+  <section>
+    <h1 class="page-title">سجل التدقيق</h1>
+    <div class="card table-wrap">
+      <table class="admin-data-table responsive-stack">
+        <thead>
+          <tr>
+            <th>الوقت</th>
+            <th>الفاعل</th>
+            <th>الإجراء</th>
+            <th>التفاصيل</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td data-label="الوقت">{{ row.created_at | fmtDateTime }}</td>
+            <td data-label="الفاعل">{{ row.actor_name or row.actor_email or '—' }}</td>
+            <td data-label="الإجراء">{{ row.action }}</td>
+            <td data-label="التفاصيل"><code class="audit-details">{{ row.details }}</code></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-empty">لا سجلات بعد.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

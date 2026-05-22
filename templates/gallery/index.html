@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}معرض الشهادات{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/gallery.css">
+{% endblock %}
+{% block content %}
+<div class="wrap gallery-page">
+  <header class="gallery-hero">
+    <h1 class="page-title">معرض الشهادات</h1>
+    <div class="gallery-policy">
+      <span class="policy-badge policy-public">عرض عام</span>
+      <span class="policy-badge policy-members">رفع للأعضاء</span>
+    </div>
+    {% if current_user and current_user.status == 'active' %}
+    <a href="/community/submit" class="btn btn-gold btn-sm">رفع شهادة</a>
+    {% endif %}
+  </header>
+
+  <nav class="gallery-filters">
+    <a href="/gallery" class="filter-chip {% if filter == 'all' %}active{% endif %}">الكل ({{ counts.all }})</a>
+    <a href="/gallery?type=testimony" class="filter-chip {% if filter == 'testimony' %}active{% endif %}">شهادات ({{ counts.testimony }})</a>
+    <a href="/gallery?type=video" class="filter-chip {% if filter == 'video' %}active{% endif %}">فيديوهات ({{ counts.video }})</a>
+  </nav>
+
+  {% if posts %}
+  <div class="gallery-grid">
+    {% for p in posts %}
+    {% set kind = mediaKind(p) %}
+    <a href="/gallery/{{ p.id }}" class="gallery-card card">
+      <div class="gallery-card-media">
+        {% if kind == 'youtube' %}
+        <img src="https://img.youtube.com/vi/{{ youtubeEmbedId(p.youtube_url) }}/hqdefault.jpg" alt="" loading="lazy">
+        <span class="gallery-play">▶</span>
+        {% elif kind == 'video' %}
+        <div class="gallery-media-placeholder video">🎬 فيديو</div>
+        {% elif kind == 'image' %}
+        <img src="/uploads/{{ p.media_path }}" alt="" loading="lazy">
+        {% else %}
+        <div class="gallery-media-placeholder text">📜 شهادة</div>
+        {% endif %}
+        <span class="gallery-type-badge">{% if p.post_type == 'video' %}فيديو{% else %}شهادة{% endif %}</span>
+      </div>
+      <div class="gallery-card-body">
+        <h2>{{ p.title or 'شهادة' }}</h2>
+        <p>{{ p.content | excerpt(120) }}</p>
+        <footer>
+          <span class="signature">{{ displayAuthor(p) }}</span>
+          <time>{{ p.created_at | fmtDateTime }}</time>
+        </footer>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card gallery-empty">
+    <p>لا محتوى معتمد بعد — كن أول من يرفع شهادته بعد الانضمام.</p>
+    <a href="/" class="btn btn-outline">العودة للحصن</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

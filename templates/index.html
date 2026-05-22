@@ -1,0 +1,52 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<section class="hero wrap">
+  <img src="{{ site_logo_src or logo_url or '/static/icons/logo.webp' }}" alt="{{ theme.logo_text }}" class="hero-logo{% if logo_is_svg %} hero-logo--svg{% endif %}" width="140" height="140" decoding="async">
+  <h1>{{ theme.logo_text }}</h1>
+  <p class="hero-tagline">{{ site_tagline }}</p>
+  {% if current_user %}
+  <p class="tagline">مرحباً يا {{ current_user.full_name or current_user.username }}</p>
+  {% endif %}
+  <div class="hero-actions">
+    {% if not current_user %}
+    <a href="/join/account" class="btn btn-gold">إنشاء حساب</a>
+    <a href="/gallery" class="btn btn-outline">معرض الشهادات (عام)</a>
+    <a href="/auth/login" class="btn btn-outline">دخول الأعضاء</a>
+    {% elif current_user.status == 'rejected' %}
+    <a href="/join/status" class="btn btn-outline">حالة الحساب</a>
+    {% else %}
+    <a href="/library" class="btn btn-gold">مكتبة الوعي</a>
+    <a href="/gallery" class="btn btn-outline">معرض الشهادات</a>
+    {% if current_user.role == 'admin' or current_user.role == 'supervisor' %}
+    <a href="/admin" class="btn btn-outline">الإدارة</a>
+    {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+<section class="wrap pillars">
+  <a href="{{ '/library' if current_user and current_user.status == 'active' else '/join' }}" class="pillar-card">
+    <div class="pillar-icon">📜</div>
+    <h3>مكتبة الوعي</h3>
+    <p>الأرشيف السيادي — منهج هرمي من التطهير إلى استرداد الوعي، مع بحث داخل كل فيديو.</p>
+  </a>
+  <a href="/gallery" class="pillar-card">
+    <div class="pillar-icon">🖼</div>
+    <h3>معرض الشهادات</h3>
+    <p>شهادات وفيديوهات معتمدة — مفتوح للجميع دون تسجيل.</p>
+  </a>
+  <a href="{{ '/community' if current_user and current_user.status == 'active' else '/join' }}" class="pillar-card">
+    <div class="pillar-icon">👑</div>
+    <h3>مجتمع الخلفاء</h3>
+    <p>مجتمع الخلفاء — مشاركات ويوميات ومراجعة الرقباء قبل النشر.</p>
+  </a>
+  <a href="{{ '/market' if current_user and current_user.status == 'active' else '/join' }}" class="pillar-card">
+    <div class="pillar-icon">🌿</div>
+    <h3>سوق الطيبات</h3>
+    <p>غرفة التحكم — اطلب احتياجاتك ويُوجَّه طلبك لأقرب سوق في مدينتك.</p>
+  </a>
+</section>
+
+{% endblock %}
+
+

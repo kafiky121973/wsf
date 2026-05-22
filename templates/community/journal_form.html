@@ -1,0 +1,68 @@
+﻿{% extends "base.html" %}
+{% block title %}{% if entry %}تعديل السجل{% else %}سجل جديد{% endif %}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/community.css">
+{% endblock %}
+{% block content %}
+<div class="wrap community-page form-narrow">
+  <nav class="community-breadcrumb">
+    <a href="/community">المجتمع</a> /
+    <a href="/community/journal">مفكرة الإنجاز</a> /
+    <span>{% if entry %}تعديل{% else %}جديد{% endif %}</span>
+  </nav>
+
+  <h1 class="page-title">{% if entry %}تعديل السجل{% else %}إدخال اليوم{% endif %}</h1>
+
+  <div class="card">
+    <form method="post" action="{% if entry %}/community/journal/{{ entry.id }}/edit{% else %}/community/journal/new{% endif %}">
+      <div class="grid-2-aside">
+        <div class="form-group">
+          <label>عنوان (اختياري)</label>
+          <input name="title" value="{{ entry.title if entry else '' }}">
+        </div>
+        <div class="form-group">
+          <label>يوم البروتوكول</label>
+          <input name="day_number" type="number" min="1" max="40" value="{{ entry.day_number if entry and entry.day_number else suggestedDay }}" placeholder="1–40">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>المزاج اليوم</label>
+        <div class="mood-picker">
+          {% for m in journalMoods %}
+          <label class="mood-option">
+            <input type="radio" name="mood" value="{{ m.value }}" {% if entry and entry.mood == m.value %}checked{% elif not entry and loop.index == 2 %}checked{% endif %}>
+            <span class="mood-chip {{ m.cls }}">{{ m.icon }} {{ m.value }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>اليوميات <span class="label-required">*</span></label>
+        <textarea name="content" required rows="6">{{ entry.content if entry else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>🍽 ماذا أكلت؟ (طيبات / بروتوكول)</label>
+        <textarea name="food_log" rows="3">{{ entry.food_log if entry else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>💚 تحسّن الصحة</label>
+        <textarea name="health_notes" rows="2">{{ entry.health_notes if entry else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>⚡ العقبات والتحديات</label>
+        <textarea name="obstacles" rows="2">{{ entry.obstacles if entry else '' }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-block btn-tall">
+        {% if entry %}حفظ التعديلات{% else %}حفظ في المفكرة{% endif %}
+      </button>
+      <a href="/community/journal" class="btn btn-outline btn-stack-cancel">إلغاء</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

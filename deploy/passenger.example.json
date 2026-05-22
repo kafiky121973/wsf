@@ -1,0 +1,10 @@
+{
+  "name": "shifra",
+  "script": "server.js",
+  "cwd": "/home/USER/wsf",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "BIND_HOST": "127.0.0.1"
+  }
+}

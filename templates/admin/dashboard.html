@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}لوحة الإدارة{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  {% include "partials/admin_sidebar.html" %}
+  <section>
+    <h1 class="page-title">لوحة الحصن — الإدارة</h1>
+    {% if system and system.summary.error > 0 %}
+    <div class="alert alert-danger mb-md">
+      <strong>إعدادات السيرفر ناقصة ({{ system.summary.error }})</strong> —
+      <a href="/admin/system" class="link-gold">افتح إعدادات السيرفر</a> لمعرفة ما يجب ضبطه في Hostinger.
+    </div>
+    {% elif system and not system.summary.email_ready %}
+    <div class="alert alert-warning mb-md">
+      البريد غير مُفعّل على السيرفر —
+      <a href="/admin/system" class="link-gold">إعدادات السيرفر</a>
+    </div>
+    {% endif %}
+    <div class="stats-grid">
+      <div class="stat-box"><div class="num">{{ stats.registered }}</div><div class="lbl">مسجّلون</div></div>
+      <div class="stat-box stat-box-online"><div class="num">{{ stats.online }}</div><div class="lbl">متواجدون الآن</div></div>
+      <div class="stat-box"><div class="num">{{ stats.rated_members }}</div><div class="lbl">مقيّمون</div></div>
+      <div class="stat-box"><div class="num">{{ stats.with_suggestions }}</div><div class="lbl">مقترحات محفوظة</div></div>
+      <div class="stat-box"><div class="num">{{ stats.pending_posts }}</div><div class="lbl">مشاركات بانتظار المراجعة</div></div>
+      <div class="stat-box"><div class="num">{{ stats.videos }}</div><div class="lbl">فيديو</div></div>
+      <div class="stat-box"><div class="num">{{ stats.consultations }}</div><div class="lbl">استشارات</div></div>
+      <p class="text-muted-sm presence-hint">المتواجدون: نشط خلال آخر {{ stats.online_minutes }} دقيقة — <a href="/admin/users">التقييم والمقترحات</a></p>
+    </div>
+    <div class="card geo-stats-card">
+      <h2>توزيع المسجّلين جغرافياً</h2>
+      <p class="text-muted-sm mb-md">إجمالي {{ geo.total }} مسجّل — {{ geo.with_location }} لديهم دولة ومدينة وحي محدّدة</p>
+      <div class="geo-stats-grid">
+        <div class="geo-stats-block">
+          <h3>حسب الدولة</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>الدولة</th><th>العدد</th></tr></thead><tbody>
+            {% for row in geo.by_country %}<tr><td>{{ row.country }}</td><td>{{ row.count }}</td></tr>
+            {% else %}<tr><td colspan="2" class="text-empty">لا بيانات</td></tr>{% endfor %}
+            </tbody></table>
+          </div>
+        </div>
+        <div class="geo-stats-block">
+          <h3>حسب المدينة</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>الدولة</th><th>المدينة</th><th>العدد</th></tr></thead><tbody>
+            {% for row in geo.by_city %}<tr><td>{{ row.country }}</td><td>{{ row.city }}</td><td>{{ row.count }}</td></tr>
+            {% else %}<tr><td colspan="3" class="text-empty">لا بيانات</td></tr>{% endfor %}
+            </tbody></table>
+          </div>
+        </div>
+        <div class="geo-stats-block">
+          <h3>حسب الحي</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>الدولة</th><th>المدينة</th><th>الحي</th><th>العدد</th></tr></thead><tbody>
+            {% for row in geo.by_district %}<tr><td>{{ row.country }}</td><td>{{ row.city }}</td><td>{{ row.district }}</td><td>{{ row.count }}</td></tr>
+            {% else %}<tr><td colspan="4" class="text-empty">لا بيانات</td></tr>{% endfor %}
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

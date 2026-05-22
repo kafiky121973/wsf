@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}تعديل سجل المساعد{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/knowledge">بيانات المساعد</a>
+    <a href="/cadres">مساعدك</a>
+  </aside>
+  <section>
+    <h1 class="page-title">تعديل سجل المساعد</h1>
+    <div class="card">
+      <form method="post" action="/admin/knowledge/qa/{{ row.slug }}/edit">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>id</label>
+            <input name="id" value="{{ row.id }}" readonly>
+          </div>
+          <div class="form-group">
+            <label>slug</label>
+            <input name="slug" required value="{{ row.slug }}" pattern="[a-z0-9\-]+">
+          </div>
+          <div class="form-group">
+            <label>title</label>
+            <input name="title" required value="{{ row.title }}">
+          </div>
+          <div class="form-group">
+            <label>stage</label>
+            <select name="stage" required>
+              {% for s in stages %}
+              <option value="{{ s }}" {% if s == row.stage %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>tags</label>
+            <input name="tags" value="{{ row.tags or '' }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>user_question</label>
+          <input name="user_question" required value="{{ row.user_question }}">
+        </div>
+        <div class="form-group">
+          <label>optimized_answer</label>
+          <textarea name="optimized_answer" rows="8" required>{{ row.optimized_answer }}</textarea>
+        </div>
+        <div class="form-actions mt-md">
+          <button type="submit" class="btn btn-gold">حفظ التعديلات</button>
+          <a href="/admin/knowledge" class="btn btn-outline">إلغاء</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

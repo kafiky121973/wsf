@@ -1,0 +1,23 @@
+﻿{% extends "base.html" %}
+{% block title %}لوحة المستشار{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">لوحة المستشار — مساعدك</h1>
+  {% for c in consultations %}
+  <div class="card">
+    <p><strong>من:</strong> {{ c.full_name or c.username }}</p>
+    <p>{{ c.question }}</p>
+    <div class="ai-response">{{ c.ai_response }}</div>
+    <form method="post" action="/cadres/panel/{{ c.id }}/reply">
+      <div class="form-group"><label>رد موثّق</label><textarea name="cadre_response" required></textarea></div>
+      <button type="submit" class="btn btn-gold">إرسال بتوقيع معتمد</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="text-empty">لا استشارات مفتوحة.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,69 @@
+﻿{% extends "base.html" %}
+{% block title %}دخول{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/auth.css">
+{% endblock %}
+{% block flash %}{% endblock %}
+{% block content %}
+<section class="auth-page" aria-labelledby="login-title">
+  <div class="auth-panel">
+    <header class="auth-panel-head">
+      <img
+        src="{{ site_logo_src or logo_url or '/static/icons/logo.webp' }}"
+        alt="{{ theme.logo_text }}"
+        class="auth-panel-logo{% if logo_is_svg %} auth-panel-logo--svg{% endif %}"
+        width="72"
+        height="72"
+        decoding="async"
+      >
+      <h1 id="login-title" class="auth-panel-title">دخول الحصن</h1>
+      <p class="auth-panel-lead">ادخل بريدك وكلمة مرورك للوصول إلى المكتبة والمساعد ومجتمع الأعضاء.</p>
+    </header>
+
+    {% if messages %}
+    <div class="auth-alerts" role="status">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if logged_out %}
+    <div class="auth-alerts" role="status">
+      <div class="alert alert-info">تم تسجيل الخروج بنجاح.</div>
+    </div>
+    {% endif %}
+
+    <form method="post" action="/auth/login" class="auth-form">
+      {% include "partials/csrf.html" %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <div class="auth-field">
+        <label for="login-email">البريد الإلكتروني</label>
+        <input type="email" name="email" id="login-email" required autofocus autocomplete="username email" inputmode="email" placeholder="name@example.com">
+      </div>
+      <div class="auth-field">
+        <div class="auth-field-row">
+          <label for="login-password">كلمة المرور</label>
+          <a href="/auth/forgot-password" class="auth-link-sm link-gold">نسيت كلمة المرور؟</a>
+        </div>
+        <input type="password" name="password" id="login-password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <label class="auth-remember" for="remember-me">
+        <input type="checkbox" name="remember_me" value="1" id="remember-me" checked>
+        <span class="auth-remember-text">
+          <span>حفظ تسجيل الدخول على هذا الجهاز</span>
+          <span class="auth-remember-hint">يبقى دخولك نشطاً؛ يُحفظ البريد فقط محلياً وليس كلمة المرور.</span>
+        </span>
+      </label>
+      <button type="submit" class="btn btn-gold btn-block auth-submit">دخول</button>
+    </form>
+
+    <footer class="auth-panel-foot">
+      ليس لديك حساب؟ <a href="/join/account" class="link-gold">إنشاء حساب</a>
+    </footer>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/auth-email-autofill.js"></script>
+<script src="/static/js/login-remember.js"></script>
+{% endblock %}

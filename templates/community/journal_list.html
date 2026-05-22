@@ -1,0 +1,82 @@
+﻿{% extends "base.html" %}
+{% block title %}مفكرة الإنجاز{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/community.css">
+{% endblock %}
+{% block content %}
+<div class="wrap community-page">
+  <nav class="community-breadcrumb">
+    <a href="/community">مجتمع الخلفاء</a> / <span>مفكرة الإنجاز</span>
+  </nav>
+
+  <header class="journal-header">
+    <div>
+      <h1 class="page-title">مفكرة الإنجاز</h1>
+    </div>
+    <a href="/community/journal/new" class="btn btn-gold">+ إدخال اليوم</a>
+  </header>
+
+  <div class="stats-grid journal-stats">
+    <div class="stat-box">
+      <div class="num">{{ stats.total }}</div>
+      <div class="lbl">سجل</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">{{ stats.streak }}</div>
+      <div class="lbl">أيام متتالية</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">{% if stats.latestDay %}{{ stats.latestDay }}/40{% else %}—{% endif %}</div>
+      <div class="lbl">يوم البروتوكول</div>
+    </div>
+    <div class="stat-box">
+      <div class="num journal-mood-stat">
+        {% if stats.latestMood %}{{ stats.latestMood | moodIcon }}{% else %}◈{% endif %}
+      </div>
+      <div class="lbl">{% if stats.latestMood %}{{ stats.latestMood }}{% else %}المزاج{% endif %}</div>
+    </div>
+  </div>
+
+  {% if stats.total == 0 %}
+  <div class="card journal-empty">
+    <div class="journal-empty-icon">📓</div>
+    <h2>ابدأ توثيق رحلة التشافي</h2>
+    <p>سجّل يومياً: ماذا أكلت، كيف تشعر، ما العقبات — هذا سجلك السيادي الخاص.</p>
+    <a href="/community/journal/new" class="btn btn-gold">أول إدخال</a>
+  </div>
+  {% else %}
+
+  <div class="journal-timeline">
+    {% for e in entries %}
+    <article class="journal-card card">
+      <div class="journal-card-head">
+        <div>
+          <h2>
+            <a href="/community/journal/{{ e.id }}">{{ e.title or 'يومية' }}</a>
+            {% if e.day_number %}<span class="level-badge">يوم {{ e.day_number }}</span>{% endif %}
+          </h2>
+          <time class="journal-date">{{ e.created_at | fmtDateTime }}</time>
+        </div>
+        {% if e.mood %}
+        <span class="mood-badge {{ e.mood | moodClass }}" title="{{ e.mood }}">{{ e.mood | moodIcon }} {{ e.mood }}</span>
+        {% endif %}
+      </div>
+
+      <p class="journal-excerpt">{{ e.content | excerpt(220) }}</p>
+
+      <div class="journal-tags">
+        {% if e.food_log %}<span class="journal-tag">🍽 طعام</span>{% endif %}
+        {% if e.health_notes %}<span class="journal-tag">💚 صحة</span>{% endif %}
+        {% if e.obstacles %}<span class="journal-tag">⚡ عقبات</span>{% endif %}
+      </div>
+
+      <div class="journal-card-actions">
+        <a href="/community/journal/{{ e.id }}" class="btn btn-outline btn-sm">عرض</a>
+        <a href="/community/journal/{{ e.id }}/edit" class="btn btn-outline btn-sm">تعديل</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

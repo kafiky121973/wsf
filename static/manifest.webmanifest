@@ -1,0 +1,37 @@
+{
+  "id": "/",
+  "name": "شفرة الفطرة",
+  "short_name": "شفرة الفطرة",
+  "description": "مكتبة الوعي، مجتمع الخلفاء، مساعدك، سوق الطيبات",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#0D0B08",
+  "theme_color": "#C9A227",
+  "categories": ["education", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}قوائم التنقل حسب الدور{% endblock %}
+
+{% block content %}
+
+<div class="wrap admin-grid">
+
+  <aside class="sidebar">
+
+    <a href="/admin">لوحة التحكم</a>
+
+    <a href="/admin/users">إدارة الأعضاء</a>
+
+    <a href="/admin/nav-menus" class="active">قوائم التنقل</a>
+
+    <a href="/admin/permissions">صلاحيات الموارد</a>
+
+    <a href="/admin/owner-messages">مراسلة الأعضاء</a>
+
+    <a href="/admin/newsletter">جرعات الوعي</a>
+
+  </aside>
+
+  <section>
+
+    <h1 class="page-title">قوائم التنقل حسب الدور</h1>
+
+    <p class="text-muted-sm mb-md">
+
+      اختر ما يظهر في <strong>القائمة العلوية</strong> لكل دور. الرقم = ترتيب الظهور (من الأصغر أولاً).
+
+      الضيف = زائر غير مسجّل · مرفوض = حساب مرفوض · قيد التفعيل = قبل اكتمال العضوية.
+
+    </p>
+
+
+
+    <nav class="role-tabs mb-md" aria-label="الأدوار">
+
+      {% for r in nav_roles %}
+
+      <a href="/admin/nav-menus?role={{ r }}" class="role-tab{% if r == active_role %} active{% endif %}">
+
+        {{ role_labels[r] or r }}
+
+      </a>
+
+      {% endfor %}
+
+    </nav>
+
+
+
+    <form method="post" action="/admin/nav-menus" class="card nav-menu-editor">
+
+      <input type="hidden" name="role" value="{{ active_role }}">
+
+      <h2 class="h3 mb-md">دور: {{ role_labels[active_role] or active_role }}</h2>
+
+      <table class="data-table nav-menu-table">
+
+        <thead>
+
+          <tr>
+
+            <th>يظهر</th>
+
+            <th>العنصر</th>
+
+            <th>الرابط</th>
+
+            <th>الترتيب</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {% for item in nav_items %}
+
+          <tr>
+
+            <td>
+
+              <label class="label-check-inline">
+
+                <input type="checkbox" name="enabled_{{ item.key }}" value="1" {% if item.enabled %}checked{% endif %}>
+
+              </label>
+
+            </td>
+
+            <td><strong>{{ item.label }}</strong><br><code class="text-muted-sm">{{ item.key }}</code></td>
+
+            <td class="text-muted-sm">{{ item.href }}</td>
+
+            <td>
+
+              <input type="number" name="sort_{{ item.key }}" value="{{ item.sort_order }}" min="0" max="999" class="nav-sort-input">
+
+            </td>
+
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+      <div class="form-actions mt-md">
+
+        <button type="submit" class="btn btn-gold">حفظ قائمة هذا الدور</button>
+
+      </div>
+
+    </form>
+
+
+
+    <form method="post" action="/admin/nav-menus/reset" class="mt-md" onsubmit="return confirm('إعادة هذا الدور للافتراضي؟');">
+
+      <input type="hidden" name="role" value="{{ active_role }}">
+
+      <button type="submit" class="btn btn-sm btn-outline">إعادة الافتراضي لهذا الدور</button>
+
+    </form>
+
+    <form method="post" action="/admin/nav-menus/reset" class="mt-sm" onsubmit="return confirm('إعادة كل الأدوار للافتراضي؟');">
+
+      <input type="hidden" name="role" value="__all__">
+
+      <button type="submit" class="btn btn-sm btn-outline text-danger-sm">إعادة الكل للافتراضي</button>
+
+    </form>
+
+  </section>
+
+</div>
+
+{% endblock %}
+

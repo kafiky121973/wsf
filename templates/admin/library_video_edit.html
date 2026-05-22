@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}تعديل فيديو{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/library/manage">إدارة المكتبة</a>
+    <a href="/library/video/{{ video.id }}">معاينة</a>
+  </aside>
+  <section>
+    <h1 class="page-title">تعديل فيديو</h1>
+    <div class="card">
+      <form method="post" action="/admin/library/video/{{ video.id }}/edit" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>العنوان</label>
+          <input name="title" required value="{{ video.title }}">
+        </div>
+        <div class="form-group">
+          <label>التصنيف</label>
+          <select name="category_id" required>
+            {% for c in categories %}
+            <option value="{{ c.id }}" {% if c.id == video.category_id %}selected{% endif %}>{{ c.level_name }} — {{ c.name_ar }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>الوصف</label>
+          <textarea name="description" rows="2">{{ video.description or '' }}</textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>رابط YouTube</label>
+            <input name="youtube_url" value="{{ video.youtube_url or '' }}" placeholder="https://…">
+          </div>
+          <div class="form-group">
+            <label>المدة (ثواني)</label>
+            <input name="duration_seconds" type="number" min="0" value="{{ video.duration_seconds or 0 }}">
+            <small class="text-muted-sm">تُحدَّث تلقائياً عند رفع ملف فيديو جديد.</small>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>ترتيب العرض</label>
+          <input name="sort_order" type="number" value="{{ video.sort_order or 0 }}">
+        </div>
+        {% if video.video_path %}
+        <p class="text-muted-sm mb-sm">ملف حالي: {{ video.video_path }}</p>
+        <label class="label-check mb-md">
+          <input type="checkbox" name="remove_video_file" value="1" class="input-check">
+          حذف الملف المحلي الحالي
+        </label>
+        {% endif %}
+        <div class="form-group">
+          <label>استبدال ملف فيديو محلي (اختياري)</label>
+          <input type="file" name="video_file" accept="video/*">
+          <small class="text-muted-sm">عند رفع ملف جديد تُستخرج المدة تلقائياً.</small>
+        </div>
+        <div class="form-group">
+          <label>النص الكامل (videos.transcript_text)</label>
+          <textarea name="transcript_text" rows="5">{{ video.transcript_text or '' }}</textarea>
+        </div>
+        <label class="label-check">
+          <input type="checkbox" name="is_published" value="1" {% if video.is_published %}checked{% endif %} class="input-check">
+          ظاهر في المكتبة
+        </label>
+        <div class="form-actions mt-md">
+          <button type="submit" class="btn btn-gold">حفظ التعديلات</button>
+          <a href="/admin/library/manage" class="btn btn-outline">إلغاء</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

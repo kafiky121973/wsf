@@ -1,0 +1,110 @@
+﻿{% extends "base.html" %}
+
+{% block title %}طلب جديد{% endblock %}
+
+{% block content %}
+
+<div class="wrap page-medium-sm page-pad">
+
+  <h1 class="page-title">طلب من سوق الطيبات</h1>
+
+  <div class="card">
+
+    <form method="post">
+
+      <div class="form-group">
+
+        <label>احتياجاتك من الطيبات *</label>
+
+        <textarea name="items" required rows="4"></textarea>
+
+      </div>
+
+      <div class="form-group">
+
+        <label>ملاحظات (اختياري)</label>
+
+        <textarea name="notes" rows="2"></textarea>
+
+      </div>
+
+      {% if memberCity and points | length %}
+
+      <div class="form-group">
+
+        <label>السوق (اختياري)</label>
+
+        <select name="point_id">
+
+          <option value="">توجيه تلقائي لأقرب سوق في {{ memberCity }}</option>
+
+          {% for p in points %}
+
+          <option value="{{ p.id }}">{{ p.name }}</option>
+
+          {% endfor %}
+
+        </select>
+
+      </div>
+
+      {% elif memberCity %}
+      <p class="market-empty-message text-muted-sm">
+        نسأل الله أن نجد صدى في قلوب الناس ليعودوا لفطرتهم في منطقتك — {{ memberCity }}.
+        يمكنك إرسال طلبك وسنبلّغ الإدارة.
+      </p>
+
+      {% else %}
+
+      <p class="text-muted-sm"><a href="/profile/location">حدّد مدينتك</a> لاختيار سوق محلي.</p>
+
+      {% endif %}
+
+      <input type="hidden" name="lat" id="lat">
+
+      <input type="hidden" name="lng" id="lng">
+
+      <button type="submit" class="btn btn-gold btn-block">إرسال الطلب</button>
+
+    </form>
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="/static/js/geolocation.js"></script>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    var latEl = document.getElementById("lat");
+
+    var lngEl = document.getElementById("lng");
+
+    if (!latEl || !lngEl || typeof ShifraGeo === "undefined") return;
+
+    ShifraGeo.capture({
+
+      latInput: latEl,
+
+      lngInput: lngEl,
+
+      countryInput: { value: "" },
+
+      cityInput: { value: "" },
+
+      districtInput: { value: "" },
+
+    }).catch(function () {});
+
+  });
+
+</script>
+
+{% endblock %}
+

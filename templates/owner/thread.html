@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}مقترحاتكم{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/owner-messages.css">
+{% endblock %}
+{% block content %}
+<div class="wrap owner-page">
+  <h1 class="page-title">مقترحاتكم</h1>
+  <p class="text-muted-sm mb-md">شاركنا اقتراحاتك وملاحظاتك لإدارة الحصن — رسائل خاصة بينك وبين المالك.</p>
+  <p class="text-muted-sm mb-md">
+    <button type="button" class="btn btn-outline btn-sm" onclick="window.ShifraPush && window.ShifraPush.enable()">تفعيل إشعارات الردود</button>
+  </p>
+
+  <section class="card owner-chat-panel">
+    <header class="owner-chat-head">
+      <strong>✦ المالك — إدارة شفرة الفطرة</strong>
+    </header>
+    <div id="owner-chat-messages" class="owner-chat-messages" aria-live="polite">
+      {% for m in thread %}
+      <div class="owner-msg owner-msg-{{ m.sender }}">
+        <div class="bubble">{{ m.body }}</div>
+        <time datetime="{{ m.created_at }}">{{ m.created_at | fmtDateTime }}</time>
+      </div>
+      {% else %}
+      <p class="text-muted-sm text-empty">لم تُرسل رسالة بعد. اكتب للمالك سؤالاً أو ملاحظة.</p>
+      {% endfor %}
+    </div>
+    <form method="post" action="/owner/send" class="owner-compose owner-compose-form">
+      <div class="emoji-bar" aria-label="رموز">
+        {% for em in emoji_presets %}
+        <button type="button" data-emoji="{{ em }}" title="إدراج">{{ em }}</button>
+        {% endfor %}
+      </div>
+      <textarea name="body" required maxlength="{{ max_body }}" placeholder="رسالتك للمالك…"></textarea>
+      <div class="owner-compose-actions">
+        <button type="submit" class="btn btn-gold">إرسال</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/owner-messages.js"></script>
+{% endblock %}

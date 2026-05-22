@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}تثبيت التطبيق — {{ theme.site_name }}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/install-page.css">
+{% endblock %}
+{% block content %}
+<div class="wrap page-pad install-page">
+  <h1 class="page-title">تثبيت {{ theme.site_name }} على جهازك</h1>
+  <p class="text-muted-sm mb-md">تطبيق على الشاشة الرئيسية — وصول أسرع وإشعارات (على الأجهزة المدعومة).</p>
+
+  <div id="install-already" class="card install-banner-success mb-md" hidden>
+    <p><strong>التطبيق مثبّت أو يعمل بوضع التطبيق.</strong> <a href="/" class="link-gold">افتح الحصن</a></p>
+  </div>
+
+  <div id="install-inapp-warn" class="card install-banner-warn mb-md" hidden>
+    <p><strong>أنت داخل متصفح تطبيق (واتساب، إنستغرام، …)</strong></p>
+    <p class="text-muted-sm">التثبيت لا يعمل من هنا. انسخ الرابط وافتحه في <strong>Safari</strong> (آيفون) أو <strong>Chrome</strong> (أندرويد).</p>
+  </div>
+
+  <div class="install-toolbar card mb-md">
+    <button type="button" id="install-copy-url" class="btn btn-outline btn-sm">نسخ رابط الموقع</button>
+    <button type="button" id="install-native-btn" class="btn btn-gold btn-sm" hidden>تثبيت الآن (هذا المتصفح)</button>
+    <p id="install-sw-status" class="text-muted-sm install-sw-hint">جاري التحقق من دعم التثبيت…</p>
+  </div>
+
+  <div class="card mb-md install-card-active" id="install-ios">
+    <h2 class="section-title-sm">iPhone و iPad — Safari</h2>
+    <p class="text-muted-sm mb-md"><strong>مهم:</strong> من <strong>Safari</strong> فقط (ليس Chrome داخل آيفون).</p>
+    <ol class="install-steps">
+      <li>افتح الرابط الرسمي للموقع في Safari{% if install_url %} (<code dir="ltr">{{ install_url }}</code>){% endif %}.</li>
+      <li>زر <strong>مشاركة</strong> (مربع وسهم للأعلى).</li>
+      <li><strong>إضافة إلى الشاشة الرئيسية</strong>.</li>
+      <li><strong>إضافة</strong> في الزاوية.</li>
+    </ol>
+    <p class="install-visual-hint text-muted-sm">بعدها تظهر أيقونة «{{ theme.site_name }}» على الشاشة الرئيسية.</p>
+  </div>
+
+  <div class="card mb-md" id="install-android" hidden>
+    <h2 class="section-title-sm">Android — Chrome أو Edge</h2>
+    <ol class="install-steps">
+      <li>افتح الموقع في Chrome أو Edge.</li>
+      <li>من الشريط السفلي: <strong>تثبيت</strong> إن ظهر، أو</li>
+      <li>القائمة ⋮ ← <strong>تثبيت التطبيق</strong> / Install app.</li>
+    </ol>
+  </div>
+
+  <div class="card mb-md" id="install-desktop" hidden>
+    <h2 class="section-title-sm">كمبيوتر — Windows / Mac</h2>
+    <ol class="install-steps">
+      <li><strong>Chrome / Edge:</strong> أيقونة التثبيت ⊕ في شريط العنوان، أو القائمة ← تثبيت التطبيق.</li>
+      <li><strong>Safari (Mac):</strong> ملف ← إضافة إلى Dock.</li>
+    </ol>
+  </div>
+
+  <p class="text-center mb-md">
+    <button type="button" id="install-show-other" class="btn btn-outline btn-sm">عرض تعليمات أنظمة أخرى</button>
+  </p>
+
+  <div class="card install-faq mb-md">
+    <h2 class="section-title-sm">لم يظهر زر التثبيت؟</h2>
+    <ul class="install-steps">
+      <li>تأكد أن الموقع يفتح بـ <strong>https://</strong> (ليس http فقط).</li>
+      <li>على السيرفر: شغّل <code>npm run assets</code> ثم ارفع مجلد <code>static/icons/</code> (ملفات PNG).</li>
+      <li>أعد تحميل الصفحة بدون كاش: Ctrl+F5 أو مسح بيانات الموقع.</li>
+      <li>على iPhone: لا يظهر زر تلقائي — اتبع خطوات Safari أعلاه (هذا طبيعي).</li>
+    </ul>
+  </div>
+
+  <p class="text-center mt-lg">
+    <a href="/" class="btn btn-gold">العودة للحصن</a>
+  </p>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/install-page.js?v=1"></script>
+{% endblock %}

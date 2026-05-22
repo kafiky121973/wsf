@@ -1,0 +1,81 @@
+﻿{% extends "base.html" %}
+{% block title %}طلب الانضمام{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/geo.css">
+{% endblock %}
+{% block content %}
+<div class="wrap form-narrow">
+  <h1 class="page-title">طلب الانضمام للحصن</h1>
+
+  <div class="card">
+    <form method="post" action="/join/account" id="join-form">
+      {% include "partials/csrf.html" %}
+      <input type="hidden" name="location_locked" id="location_locked" value="">
+      <input type="hidden" name="location_source" id="location_source" value="">
+      <input type="hidden" name="lat" id="lat">
+      <input type="hidden" name="lng" id="lng">
+
+      <div class="geo-step">
+        <button type="button" id="btn-geo" class="btn btn-gold geo-btn">تحديد الموقع</button>
+        <div id="geo-status" class="geo-status" aria-live="polite"></div>
+
+        <div class="form-group form-group-tight-sm">
+          <label>الدولة</label>
+          <input name="country" id="country" readonly required tabindex="-1">
+        </div>
+        <div class="form-group mb-0">
+          <label>المدينة</label>
+          <input name="city" id="city" readonly required tabindex="-1">
+        </div>
+        <div class="form-group">
+          <label>الحي</label>
+          <input name="district" id="district" readonly required tabindex="-1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>الاسم الكامل</label>
+        <input name="full_name" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" name="email" id="reg-email" required autocomplete="username email" inputmode="email" spellcheck="false">
+        <small class="text-muted-sm">يمكن اختيار البريد المحفوظ في متصفحك تلقائياً</small>
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" name="password" required minlength="8" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>تأكيد كلمة المرور</label>
+        <input type="password" name="password_confirm" required minlength="8" autocomplete="new-password">
+      </div>
+      <button type="submit" id="btn-submit" class="btn btn-gold btn-block" disabled>إنشاء الحساب</button>
+    </form>
+    <p class="auth-footer">
+      لديك حساب؟ <a href="/auth/login" class="link-gold">دخول</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/auth-email-autofill.js"></script>
+<script src="/static/js/geolocation.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  ShifraGeo.bindForm({
+    form: document.getElementById("join-form"),
+    triggerBtn: document.getElementById("btn-geo"),
+    submitBtn: document.getElementById("btn-submit"),
+    statusEl: document.getElementById("geo-status"),
+    latInput: document.getElementById("lat"),
+    lngInput: document.getElementById("lng"),
+    countryInput: document.getElementById("country"),
+    cityInput: document.getElementById("city"),
+    districtInput: document.getElementById("district"),
+    lockedInput: document.getElementById("location_locked"),
+    sourceInput: document.getElementById("location_source"),
+  });
+});
+</script>
+{% endblock %}

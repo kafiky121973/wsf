@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.title }} — مكتبة الوعي{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/waei-source.css">
+{% endblock %}
+{% block content %}
+<div class="wrap waei-source-page">
+  <header class="waei-source-head">
+    <a href="/" class="btn btn-outline btn-sm">← الحصن</a>
+    {% if member_nav %}
+    <a href="/cadres" class="btn btn-outline btn-sm">مساعدك</a>
+    {% endif %}
+    {% if entry.stage %}
+    <span class="chat-stage-badge">{{ entry.stage }}</span>
+    {% endif %}
+    <h1 class="page-title">{{ entry.title }}</h1>
+    {% if tags_display %}
+    <p class="waei-source-tags">{{ tags_display }}</p>
+    {% endif %}
+  </header>
+
+  <article class="card waei-source-card">
+    <h2 class="waei-source-q">السؤال</h2>
+    <p class="waei-source-question">{{ entry.user_question }}</p>
+    <h2 class="waei-source-q">الجواب</h2>
+    <div class="waei-source-answer">{{ entry.optimized_answer }}</div>
+  </article>
+
+  <div class="waei-source-actions">
+    {% if member_nav %}
+    <a href="/cadres" class="btn btn-gold">اسأل المساعد سؤالاً آخر</a>
+    {% else %}
+    <a href="/auth/login?next=/cadres" class="btn btn-gold">سجّل الدخول لاستخدام المساعد</a>
+    {% endif %}
+    {% if member_nav and library_url %}
+    <a href="{{ library_url }}" class="btn btn-outline">الأرشيف في المكتبة</a>
+    {% elif library_url %}
+    <a href="/join/account" class="btn btn-outline">انضم للمكتبة الكاملة</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

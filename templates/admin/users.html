@@ -1,0 +1,220 @@
+﻿{% extends "base.html" %}
+
+{% block title %}إدارة الأعضاء{% endblock %}
+
+{% block content %}
+
+<div class="wrap admin-grid">
+
+  <aside class="sidebar">
+
+    <a href="/admin">لوحة التحكم</a>
+
+    <a href="/admin/applications">طلبات الانضمام</a>
+    <a href="/admin/quiz-review">اختبار الوعي</a>
+    <a href="/admin/users" class="active">إدارة الأعضاء</a>
+
+    <a href="/admin/owner-messages">مراسلة الأعضاء</a>
+
+    <a href="/admin/newsletter">جرعات الوعي</a>
+
+    <a href="/admin/nav-menus">قوائم التنقل</a>
+
+    <a href="/admin/permissions">صلاحيات الموارد</a>
+
+  </aside>
+
+  <section>
+
+    <h1 class="page-title">إدارة الأعضاء</h1>
+
+    <div class="stats-grid mb-md">
+
+      <div class="stat-box">
+
+        <div class="num">{{ presence.registered }}</div>
+
+        <div class="lbl">مسجّلون</div>
+
+      </div>
+
+      <div class="stat-box stat-box-online">
+
+        <div class="num">{{ presence.online }}</div>
+
+        <div class="lbl">متواجدون الآن ({{ presence.onlineMinutes }} د)</div>
+
+      </div>
+
+      <div class="stat-box">
+
+        <div class="num">{{ presence.siteTotalSeconds | fmtDuration }}</div>
+
+        <div class="lbl">إجمالي التواجد (الكل)</div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="card admin-users-table-wrap table-wrap">
+
+      <table class="admin-data-table admin-users-table responsive-stack">
+
+        <thead>
+
+          <tr>
+
+            <th>العضو</th>
+
+            <th>الحالة</th>
+
+            <th>آخر نشاط</th>
+
+            <th>التواجد</th>
+
+            <th>تعيين الدور</th>
+
+            <th>حذف</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {% for u in users %}
+
+          <tr>
+
+            <td data-label="العضو">
+
+              <strong>{{ u.full_name or u.username }}</strong><br>
+
+              <span class="text-muted-sm">{{ u.email }}</span><br>
+
+              <span class="text-muted-sm">{{ role_labels[u.role] or u.role }}</span>
+
+            </td>
+
+            <td data-label="الحالة">
+
+              {{ u.status }}
+
+              {% if u.status == 'pending' or u.role == 'pending' %}
+
+              <form method="post" action="/admin/users/{{ u.id }}/approve" class="inline-form mt-sm">
+                {% include "partials/csrf.html" %}
+
+                <button type="submit" class="btn btn-gold btn-sm">تفعيل</button>
+
+              </form>
+
+              {% endif %}
+
+            </td>
+
+            <td class="presence-cell" data-label="آخر نشاط">
+
+              {% if u.last_seen_at %}
+
+              <span class="text-muted-sm">{{ u.last_seen_at | fmtDateTime }}</span>
+
+              {% else %}
+
+              <span class="text-muted-sm">—</span>
+
+              {% endif %}
+
+              <br>
+
+              <span class="presence-badge {% if u.is_online %}presence-online{% else %}presence-offline{% endif %}">
+
+                {% if u.is_online %}متصل الآن{% else %}غير متصل{% endif %}
+
+              </span>
+
+            </td>
+
+            <td class="presence-cell" data-label="التواجد">
+
+              <span class="presence-stat-lbl">هذه الجلسة</span>
+
+              <strong>{% if u.is_online %}{{ u.current_session_seconds | fmtDuration }}{% else %}—{% endif %}</strong>
+
+              <br>
+
+              <span class="presence-stat-lbl">الإجمالي</span>
+
+              <strong>{{ u.total_presence_seconds | fmtDuration }}</strong>
+
+            </td>
+
+            <td data-label="تعيين الدور">
+
+              <form method="post" action="/admin/users/{{ u.id }}/role" class="admin-inline-form user-role-form">
+                {% include "partials/csrf.html" %}
+
+                <select name="role" class="role-select" required title="اختر الدور">
+
+                  <option value="admin"{% if u.role == 'admin' %} selected{% endif %}>مدير النظام</option>
+
+                  <option value="supervisor"{% if u.role == 'supervisor' %} selected{% endif %}>مشرف / رقيب</option>
+
+                  <option value="designer"{% if u.role == 'designer' %} selected{% endif %}>مصمم المنصة</option>
+
+                  <option value="cadre"{% if u.role == 'cadre' %} selected{% endif %}>مستشار شخصي</option>
+
+                  <option value="member"{% if u.role == 'member' %} selected{% endif %}>عضو خلف</option>
+
+                  <option value="pending"{% if u.role == 'pending' %} selected{% endif %}>قيد التفعيل</option>
+
+                </select>
+
+                <button type="submit" class="btn btn-sm btn-gold">حفظ</button>
+
+              </form>
+
+            </td>
+
+            <td data-label="حذف">
+
+              <form method="post" action="/admin/users/{{ u.id }}/delete" class="inline-form"
+                    onsubmit="return confirm('حذف {{ u.email }}؟ يُنهى حسابه ويُسجَّل خروجه من كل الأجهزة.');">
+                {% include "partials/csrf.html" %}
+                <input type="hidden" name="confirm_email" value="{{ u.email }}">
+
+                <button type="submit" class="btn btn-sm btn-danger">حذف</button>
+
+              </form>
+
+            </td>
+
+          </tr>
+
+          {% else %}
+
+          <tr><td colspan="6" class="text-empty">لا مستخدمين.</td></tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <p class="text-muted-sm mt-md">
+
+      التواجد يُحسب من زيارات الموقع بعد تسجيل الدخول (تحديث كل دقيقتين). عند الحذف تُنهى جلسات العضو ولا يبقى مسجّل دخولاً.
+
+    </p>
+
+  </section>
+
+</div>
+
+{% endblock %}
+
+

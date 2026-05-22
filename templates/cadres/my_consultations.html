@@ -1,0 +1,22 @@
+﻿{% extends "base.html" %}
+{% block title %}استشاراتي{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">استشاراتي</h1>
+  {% for c in consultations %}
+  <div class="card">
+    <p><strong>سؤال:</strong> {{ c.question }}</p>
+    {% if c.ai_response %}
+    <div class="ai-response ai-response-mt"><strong>رد الأرشيف الذكي:</strong><br>{{ c.ai_response }}</div>
+    {% endif %}
+    {% if c.cadre_response %}
+    <div class="ai-response ai-response-ok"><strong>رد المستشار:</strong><br>{{ c.cadre_response }}</div>
+    {% endif %}
+    <span class="level-badge">{{ c.status }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+

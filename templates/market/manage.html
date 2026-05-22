@@ -1,0 +1,100 @@
+﻿{% extends "base.html" %}
+{% block title %}إدارة الأسواق{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/geo.css">
+{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">إدارة الأسواق</h1>
+
+  <div class="card">
+    <h3>إضافة سوق</h3>
+    <form method="post" action="/market/manage/add" id="market-add-form">
+      <input type="hidden" name="lat" id="lat">
+      <input type="hidden" name="lng" id="lng">
+      <div class="form-group"><label>اسم السوق</label><input name="name" required placeholder="سوق الرياض — الشمال"></div>
+      <div class="grid-2">
+        <div class="form-group"><label>المنطقة</label><input name="region" id="region" required></div>
+        <div class="form-group"><label>المدينة</label><input name="city" id="city" required></div>
+      </div>
+      <div class="form-group"><label>العنوان</label><input name="address" id="address" placeholder="الحي — الشارع"></div>
+      <div class="geo-step mb-md">
+        <button type="button" id="btn-geo" class="btn btn-outline geo-btn">تحديد موقع GPS للسوق</button>
+        <div id="geo-status" class="geo-status" aria-live="polite"></div>
+      </div>
+      <div class="form-group"><label>هاتف</label><input name="contact_phone"></div>
+      <button type="submit" class="btn btn-gold">إضافة السوق</button>
+    </form>
+  </div>
+
+  {% for p in points %}
+  <div class="card market-admin-card">
+    <div class="card-head-row">
+      <h3>{{ p.name }}</h3>
+      <form method="post" action="/market/manage/{{ p.id }}/delete" class="form-inline" onsubmit="return confirm('حذف هذا السوق وجميع منتجاته؟');">
+        <button type="submit" class="btn btn-outline btn-sm">حذف السوق</button>
+      </form>
+    </div>
+    <p>{{ p.region }} — {{ p.city }}</p>
+    {% if p.address or (p.lat and p.lng) %}
+    <p class="market-gps">
+      📍
+      {% if p.lat and p.lng %}
+      <a href="{{ mapsUrl(p.lat, p.lng) }}" target="_blank" rel="noopener" class="link-gold">
+        {{ p.address if p.address else ('GPS: ' ~ p.lat ~ '، ' ~ p.lng) }}
+      </a>
+      {% else %}
+      {{ p.address }}
+      {% endif %}
+    </p>
+    {% endif %}
+
+    {% set products = productMap[p.id] if productMap else [] %}
+    {% if products and products | length %}
+    <ul class="market-products-list">
+      {% for prod in products %}
+      <li class="market-product-row">
+        <span><strong>{{ prod.name }}</strong>{% if prod.price_note %} — {{ prod.price_note }}{% endif %}</span>
+        <form method="post" action="/market/manage/products/{{ prod.id }}/delete" class="form-inline" onsubmit="return confirm('حذف المنتج؟');">
+          <button type="submit" class="btn btn-outline btn-sm">حذف</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" action="/market/manage/{{ p.id }}/products/add" class="market-add-product-form">
+      <h4>إضافة منتج</h4>
+      <div class="grid-2">
+        <div class="form-group"><label>اسم المنتج</label><input name="name" required></div>
+        <div class="form-group"><label>السعر / ملاحظة</label><input name="price_note" placeholder="حسب الكيلو"></div>
+      </div>
+      <div class="form-group"><label>الوصف</label><input name="description"></div>
+      <button type="submit" class="btn btn-gold btn-sm">إضافة منتج</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="text-empty">لا أسواق — أضف سوقاً من الأعلى.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/geolocation.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var btn = document.getElementById("btn-geo");
+  if (!btn || typeof ShifraGeo === "undefined") return;
+  btn.addEventListener("click", function (e) {
+    e.preventDefault();
+    ShifraGeo.capture({
+      latInput: document.getElementById("lat"),
+      lngInput: document.getElementById("lng"),
+      countryInput: { value: "" },
+      cityInput: document.getElementById("city"),
+      districtInput: document.getElementById("address"),
+      statusEl: document.getElementById("geo-status"),
+    });
+  });
+});
+</script>
+{% endblock %}

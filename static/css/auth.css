@@ -1,0 +1,221 @@
+/* صفحات المصادقة — دخول / استعادة كلمة المرور */
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 88px);
+  min-height: calc(100dvh - 88px);
+  padding: 2rem 0 3rem;
+}
+
+.auth-panel {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: linear-gradient(165deg, rgba(32, 26, 18, 0.97) 0%, rgba(18, 14, 10, 0.98) 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(201, 162, 39, 0.08),
+    0 24px 48px rgba(0, 0, 0, 0.45),
+    var(--shadow-gold);
+}
+
+.auth-panel::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+}
+
+.auth-panel-head {
+  text-align: center;
+  padding: 2rem 2rem 0.5rem;
+}
+
+.auth-panel-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(201, 162, 39, 0.5);
+  box-shadow: 0 0 28px rgba(201, 162, 39, 0.3);
+  margin-bottom: 1.25rem;
+}
+
+.auth-panel-logo--svg {
+  object-fit: contain;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.auth-panel-title {
+  font-size: 1.65rem;
+  color: var(--gold);
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.auth-panel-lead {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 32ch;
+  margin-inline: auto;
+}
+
+.auth-alerts {
+  padding: 0 1.75rem;
+  margin-top: 1rem;
+}
+
+.auth-alerts .alert {
+  margin-bottom: 0;
+  font-size: 0.92rem;
+  border-radius: 8px;
+}
+
+.auth-form {
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+
+.auth-field {
+  margin-bottom: 1.15rem;
+}
+
+.auth-field label {
+  display: block;
+  color: var(--gold-light);
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.auth-field input {
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.auth-field-row label {
+  margin-bottom: 0;
+}
+
+.auth-link-sm {
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.9;
+  transition: color 0.2s;
+}
+
+.auth-link-sm:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.auth-remember {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0.25rem 0 1.35rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  background: rgba(201, 162, 39, 0.06);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-remember:hover {
+  border-color: rgba(201, 162, 39, 0.4);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.auth-remember input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.auth-remember-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.auth-remember-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.auth-submit {
+  padding: 0.9rem 1.25rem;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  letter-spacing: 0.03em;
+}
+
+.auth-panel-foot {
+  padding: 1.15rem 1.75rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid rgba(201, 162, 39, 0.18);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.auth-panel-foot a {
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    min-height: auto;
+    padding: 1.25rem 0 2rem;
+    align-items: flex-start;
+  }
+
+  .auth-panel {
+    border-radius: 12px;
+  }
+
+  .auth-panel-head {
+    padding: 1.5rem 1.25rem 0.35rem;
+  }
+
+  .auth-panel-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .auth-panel-title {
+    font-size: 1.4rem;
+  }
+
+  .auth-form,
+  .auth-alerts,
+  .auth-panel-foot {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}

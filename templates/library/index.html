@@ -1,0 +1,44 @@
+﻿{% extends "base.html" %}
+{% block title %}مكتبة الوعي{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/library.css">
+{% endblock %}
+{% block content %}
+<div class="wrap library-page">
+  <header class="library-hero">
+    <h1 class="page-title">مكتبة الوعي — الأرشيف السيادي</h1>
+    <p class="library-tagline">منهج هرمي من التطهير إلى استرداد الوعي — {{ totalVideos }} فيديو منشور</p>
+    <form action="/library/search" method="get" class="library-search">
+      <input type="search" name="q" placeholder="بحث" required minlength="2">
+      <button type="submit" class="btn btn-gold">بحث بالثواني</button>
+    </form>
+  </header>
+
+  {% if levels_data and levels_data|length %}
+  <div class="levels-grid">
+    {% for item in levels_data %}
+    <a href="/library/level/{{ item.level.level_number }}" class="level-card pillar-card">
+      <div class="level-card-top">
+        <span class="level-icon">{{ item.level.icon }}</span>
+        <span class="level-num">المستوى {{ item.level.level_number }}</span>
+      </div>
+      <h2>{{ item.level.name_ar }}</h2>
+      <p>{{ item.level.description }}</p>
+      <div class="level-meta">
+        <span class="level-badge">{{ item.videoCount }} فيديو</span>
+        <span class="level-badge">{{ item.categories|length }} تصنيف</span>
+      </div>
+      <ul class="level-cats">
+        {% for cat in item.categories %}
+        <li>{{ cat.name_ar }}</li>
+        {% endfor %}
+      </ul>
+      <span class="level-cta">استكشف المستوى ←</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-msg">المكتبة قيد التجهيز — لا مستويات بعد.</p>
+  {% endif %}
+</div>
+{% endblock %}

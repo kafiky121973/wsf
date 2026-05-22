@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+{% block title %}حالة الحساب{% endblock %}
+{% block content %}
+<div class="wrap page-medium-sm">
+  <h1 class="page-title">حالة الحساب</h1>
+  <div class="card">
+    <p><strong>الاسم:</strong> {{ user.full_name or user.email }}</p>
+    <p><strong>البريد:</strong> {{ user.email }}</p>
+    {% if user.status == 'active' %}
+    <p class="mt-md"><span class="level-badge">حسابك مفعّل ✓</span></p>
+    <a href="/" class="btn btn-gold mt-md">الدخول للحصن</a>
+    {% elif user.status == 'rejected' %}
+    <p class="mt-md"><span class="level-badge">مرفوض</span></p>
+    {% if user.rejection_note %}
+    <p class="mt-sm"><strong>ملاحظة:</strong> {{ user.rejection_note }}</p>
+    {% endif %}
+    <a href="/join/account" class="btn btn-outline mt-md">تسجيل جديد</a>
+    {% elif not user.email_verified_at and user.role != 'admin' and user.role != 'supervisor' and user.role != 'designer' %}
+    <p class="mt-md"><span class="level-badge">بانتظار تأكيد البريد</span></p>
+    <p class="text-muted-sm">افتح الرابط في بريدك أو أعد الإرسال.</p>
+    <a href="/join/verify-sent?email={{ user.email | urlencode }}" class="btn btn-gold mt-md">تأكيد البريد</a>
+    {% elif user.status == 'pending' %}
+    <p class="mt-md"><span class="level-badge">بانتظار التفعيل</span></p>
+    <p class="text-muted-sm">طلبك قيد مراجعة الرقباء. بعد إكمال الاختبار، إن مرّت 72 ساعة دون قرار يُفعَّل حسابك تلقائياً — جرّب <a href="/auth/login" class="link-gold">تسجيل الدخول</a>.</p>
+    <a href="/auth/login" class="btn btn-gold mt-md">تسجيل الدخول</a>
+    {% else %}
+    <p class="mt-md"><span class="level-badge">حسابك مفعّل ✓</span></p>
+    <a href="/" class="btn btn-gold mt-md">الدخول للحصن</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

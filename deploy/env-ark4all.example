@@ -1,0 +1,26 @@
+# انسخ هذه القيم إلى Environment Variables في Hostinger (Node.js App)
+# أو إلى ملف .env على السيرفر — ثم أضف SMTP_PASS و SECRET_KEY واحفظ وأعد التشغيل
+
+NODE_ENV=production
+SITE_URL=https://ark4all.com
+SECRET_KEY=ضع_مفتاحاً_عشوائياً_طويلاً_هنا
+COOKIE_SECURE=true
+FORCE_HTTPS=true
+
+# ——— بريد Hostinger (صندوق noreply@ark4all.com) ———
+# الإرسال عبر SMTP فقط (imap.hostinger.com للقراءة من برنامج بريد — لا يحتاجه الموقع)
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=noreply@ark4all.com
+SMTP_PASS=كلمة_مرور_صندوق_noreply_من_لوحة_البريد
+MAIL_FROM="شفرة الفطرة" <noreply@ark4all.com>
+
+# مساعدك — توليد من الأرشيف (اختياري)
+# LLM_ENABLED=1
+# OPENAI_API_KEY=
+# LLM_MODEL=gpt-4o-mini
+
+# إن فشل 587 جرّب:
+# SMTP_PORT=465
+# SMTP_SECURE=true

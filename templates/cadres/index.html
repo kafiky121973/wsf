@@ -1,0 +1,56 @@
+﻿{% extends "base.html" %}
+{% block title %}مساعدك{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/cadres-chat.css">
+{% endblock %}
+{% block content %}
+<div class="wrap cadres-page">
+  <header class="cadres-header">
+    <h1 class="page-title">مساعدك</h1>
+    <div class="cadres-actions">
+      {% if current_user and current_user.status == 'active' %}
+      <a href="/cadres/consult" class="btn btn-outline btn-sm">استشارة رسمية</a>
+      <a href="/cadres/my-consultations" class="btn btn-outline btn-sm">استشاراتي</a>
+      {% endif %}
+      {% if current_user and (current_user.role == 'admin' or current_user.role == 'supervisor' or current_user.role == 'cadre') %}
+      <a href="/admin/knowledge" class="btn btn-gold btn-sm">رفع معرفة للقاعدة</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="cadres-layout">
+    <section class="chat-panel card" aria-label="محادثة مساعدك">
+      <div class="chat-panel-head">
+        <span class="chat-avatar">✦</span>
+        <strong>مساعدك</strong>
+      </div>
+
+      <div id="chat-messages" class="chat-messages">
+        <div class="chat-msg chat-msg-bot">
+          <div class="chat-bubble">
+            السلام عليكم. أنا مساعدك في «مكتبة الوعي» — أبحث بالمعنى والسياق لا بالكلمات الحرفية فقط.
+            اسأل عن التطهير، الفطرة، السيادة، أو أي بروتوكول وثّق في الأرشيف.
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-suggestions-wrap" id="chat-suggestions-wrap">
+        <p class="chat-suggestions-label" id="chat-suggestions-label">اقتراحات للبدء:</p>
+        <div class="chat-suggestions" id="chat-suggestions">
+          <button type="button" class="chat-chip" data-q="ليه بحس بصداع لما بقطع السكر؟">صداع قطع السكر</button>
+          <button type="button" class="chat-chip" data-q="إيه الفرق بين الفطرة والمنظومة؟">الفطرة والمنظومة</button>
+          <button type="button" class="chat-chip" data-q="إزاي أرجع أتحكم في وقتي على الموبايل؟">السيادة الرقمية</button>
+        </div>
+      </div>
+
+      <form id="chat-form" class="chat-form">
+        <textarea id="chat-input" rows="2" required maxlength="2000" placeholder="اسألني.. كيف تسترد سيادتك وفطرتك اليوم؟"></textarea>
+        <button type="submit" id="chat-send" class="btn btn-gold">إرسال</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/cadres-chat.js?v=9"></script>
+{% endblock %}

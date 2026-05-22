@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}مراسلة الأعضاء{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/owner-messages.css">
+{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/users">المسجّلون</a>
+    <a href="/admin/owner-messages">مراسلة الأعضاء{% if owner_unread_total %} <span class="owner-unread-badge">{{ owner_unread_total }}</span>{% endif %}</a>
+    <a href="/admin/newsletter">جرعات الوعي</a>
+  </aside>
+  <section class="owner-inbox-layout">
+    <div class="card owner-member-list">
+      <h2 class="section-title">الأعضاء</h2>
+      {% for row in inbox %}
+      <a href="/admin/owner-messages/{{ row.id }}" class="member-row{% if active_member and active_member.id == row.id %} active{% endif %}">
+        <span class="name">
+          {% if row.unread %}<span class="owner-unread-badge">{{ row.unread }}</span>{% endif %}
+          {{ row.full_name or row.username }}
+        </span>
+        {% if row.last_body %}
+        <span class="preview">{{ row.last_body | excerpt(40) }}</span>
+        {% else %}
+        <span class="preview text-muted-sm">لا رسائل</span>
+        {% endif %}
+      </a>
+      {% else %}
+      <p class="text-empty p-md">لا أعضاء نشطون.</p>
+      {% endfor %}
+    </div>
+
+    <div class="card owner-chat-panel">
+      {% if active_member %}
+      <header class="owner-chat-head">
+        <div>
+          <strong>{{ active_member.full_name or active_member.username }}</strong>
+          <small class="text-muted-sm"> — {{ active_member.email }}{% if active_member.city %} · {{ active_member.city }}{% endif %}</small>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="window.ShifraPush && window.ShifraPush.enable()">تفعيل إشعارات المقترحات</button>
+      </header>
+      <div id="owner-chat-messages" class="owner-chat-messages">
+        {% for m in thread %}
+        <div class="owner-msg owner-msg-{{ m.sender }}">
+          <div class="bubble">{{ m.body }}</div>
+          <time datetime="{{ m.created_at }}">{{ m.created_at | fmtDateTime }}</time>
+        </div>
+        {% else %}
+        <p class="text-muted-sm">ابدأ المحادثة برد من المالك.</p>
+        {% endfor %}
+      </div>
+      <form method="post" action="/admin/owner-messages/{{ active_member.id }}/send" class="owner-compose owner-compose-form">
+        <div class="emoji-bar" aria-label="رموز">
+          {% for em in emoji_presets %}
+          <button type="button" data-emoji="{{ em }}" title="إدراج">{{ em }}</button>
+          {% endfor %}
+        </div>
+        <textarea name="body" required maxlength="{{ max_body }}" placeholder="رد المالك…"></textarea>
+        <div class="owner-compose-actions">
+          <button type="submit" class="btn btn-gold">إرسال للعضو</button>
+        </div>
+      </form>
+      {% else %}
+      <div class="owner-chat-head">
+        <p class="text-muted-sm">اختر عضواً من القائمة لعرض مراسلته والرد.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/owner-messages.js"></script>
+{% endblock %}

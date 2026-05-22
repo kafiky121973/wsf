@@ -1,0 +1,77 @@
+﻿{% extends "base.html" %}
+{% block title %}النشرة{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="/admin">لوحة التحكم</a>
+    <a href="/admin/users">المسجّلون والتقييم</a>
+    <a href="/admin/owner-messages">مراسلة الأعضاء</a>
+    <a href="/admin/newsletter">جرعات الوعي</a>
+    <a href="/admin/permissions">الصلاحيات</a>
+  </aside>
+  <section class="page-medium page-pad">
+  <h1 class="page-title">جرعات الوعي — النشرة الدورية</h1>
+
+  <div class="card mb-md">
+    <h2 class="section-title">الإرسال التلقائي</h2>
+    <p class="text-muted-sm mb-md">
+      تُختار الجرعة عشوائياً من <strong>مساعدك</strong> (ملف الأسئلة والأجوبة) و<strong>مكتبة الوعي</strong>
+      (فيديوهات، مقاطع، أرشيف المعرفة)، ثم تُرسل بالبريد وتظهر كإشعار لمن ثبّت التطبيق (PWA) وفعّل الإشعارات.
+    </p>
+    <ul class="text-muted-sm mb-md">
+      <li>آخر إرسال: {% if lastSent %}{{ lastSent | fmtDateTime }}{% else %}لم يُرسل بعد{% endif %}</li>
+      <li>اشتراكات إشعار PWA: <strong>{{ pushCount }}</strong></li>
+      <li>الفترة الحالية: كل <strong>{{ intervalHours }}</strong> ساعة</li>
+    </ul>
+    <form method="post" action="/admin/newsletter/settings" class="mb-md">
+      <label class="label-check mb-sm">
+        <input type="checkbox" name="auto_enabled" value="1" {% if autoEnabled %}checked{% endif %} class="input-check">
+        تفعيل الإرسال التلقائي
+      </label>
+      <div class="form-group grid-inline">
+        <label>الفترة (ساعات)</label>
+        <input type="number" name="interval_hours" min="1" max="168" value="{{ intervalHours }}" class="input-narrow">
+      </div>
+      <button type="submit" class="btn btn-outline btn-sm">حفظ الإعدادات</button>
+    </form>
+    <form method="post" action="/admin/newsletter/send-auto" class="form-inline">
+      <button type="submit" class="btn btn-gold">إرسال جرعة تلقائية الآن</button>
+    </form>
+  </div>
+
+  {% if preview %}
+  <div class="card mb-md">
+    <h2 class="section-title">معاينة الجرعة التالية (محتملة)</h2>
+    <p class="text-muted-sm">المصدر: {{ preview.source_type }} — {{ preview.source_ref }}</p>
+    <h3>{{ preview.subject }}</h3>
+    <p class="preserve-lines">{{ preview.content | excerpt(400) }}</p>
+    {% if preview.link_url %}<p><a href="{{ preview.link_url }}" class="link-gold">الرابط في المنصة</a></p>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h2 class="section-title">إرسال يدوي</h2>
+    <form method="post">
+      <div class="form-group"><label>الموضوع</label><input name="subject" required></div>
+      <div class="form-group"><label>المحتوى (جرعة وعي — ليست إعلاناً)</label><textarea name="content" required rows="8"></textarea></div>
+      <div class="form-group"><label>رابط اختياري</label><input name="link_url" placeholder="/cadres أو /library/video/1"></div>
+      <button type="submit" class="btn btn-gold">إرسال للمشتركين</button>
+    </form>
+  </div>
+
+  <h2 class="section-title-lg">السجل</h2>
+  {% for h in history %}
+  <div class="card">
+    <h3>{{ h.subject }}</h3>
+    {% if h.auto_generated %}<span class="level-badge">تلقائي</span>{% endif %}
+    {% if h.source_type %}<small class="text-muted-sm"> — {{ h.source_type }}</small>{% endif %}
+    <p class="preserve-lines">{{ h.content | excerpt(200) }}</p>
+    {% if h.link_url %}<a href="{{ h.link_url }}" class="link-gold link-sm">فتح المحتوى</a>{% endif %}
+    <small class="text-muted-sm">{{ h.sent_at | fmtDateTime }}</small>
+  </div>
+  {% else %}
+  <p class="text-empty">لا جرعات بعد.</p>
+  {% endfor %}
+  </section>
+</div>
+{% endblock %}

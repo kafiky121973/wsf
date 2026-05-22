@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}تأكيد البريد{% endblock %}
+{% block content %}
+<div class="wrap form-narrow-sm">
+  <h1 class="page-title">أكّد بريدك الإلكتروني</h1>
+  <div class="card">
+    <p>أُرسل رابط التأكيد إلى بريدك:</p>
+    <p><strong>{{ email }}</strong></p>
+    <p class="text-muted-sm"><strong>الرابط في رسالة البريد</strong> وليس في هذه الصفحة. افتح الوارد (أو البريد المزعج) واضغط «تأكيد البريد والدخول» — للدخول مباشرة دون موافقة الإدارة.</p>
+    <p class="text-muted-sm">الرابط صالح <strong>{{ verify_ttl_minutes }} دقيقة</strong> فقط. يُفعَّل بريدك <strong>بالضغط على الرابط</strong> في الرسالة — لا تفعيل تلقائي. إن انتهت المدة استخدم «إعادة الإرسال».</p>
+    <p class="text-muted-sm">تحقق من مجلد «البريد المزعج» إن لم تجد الرسالة.</p>
+    <p class="text-muted-sm">المرسل: <strong>{{ mail_from }}</strong> — الموضوع: <strong>أكّد بريدك — شفرة الفطرة</strong></p>
+    <form method="post" action="/join/resend-verification" class="mt-md">
+      {% include "partials/csrf.html" %}
+      <input type="hidden" name="email" value="{{ email }}">
+      <button type="submit" class="btn btn-outline btn-block">إعادة إرسال رابط التأكيد</button>
+    </form>
+    <p class="auth-footer mt-md">
+      <a href="/auth/login" class="link-gold">دخول بعد التأكيد</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

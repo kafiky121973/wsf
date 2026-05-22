@@ -1,0 +1,18 @@
+﻿{% extends "base.html" %}
+{% block title %}ميثاق العضوية{% endblock %}
+{% block content %}
+<div class="wrap page-medium">
+  <h1 class="page-title">بيان استرداد السيادة</h1>
+  <div class="card">
+    <div class="pledge-content">{{ statement.content }}</div>
+    <form method="post">
+      {% include "partials/csrf.html" %}
+      <label class="label-check-start">
+        <input type="checkbox" name="accept" value="1" required class="input-check">
+        <span>أقرّ بأنني قرأت البيان وأوافق على ميثاق العضوية في «شفرة الفطرة».</span>
+      </label>
+      <button type="submit" class="btn btn-gold btn-block mt-lg">أوافق وأتابع</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

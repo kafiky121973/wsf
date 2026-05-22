@@ -1,0 +1,62 @@
+﻿{% extends "base.html" %}
+{% block title %}سوق الطيبات{% endblock %}
+{% block content %}
+<div class="wrap page-pad">
+  <h1 class="page-title">سوق الطيبات</h1>
+  <div class="market-top-actions">
+    <a href="/market/order" class="btn btn-gold">طلب جديد</a>
+    <a href="/market/my-orders" class="btn btn-outline">طلباتي</a>
+  </div>
+
+  {% if not memberCity %}
+  <div class="card">
+    <p>حدّد مدينتك في <a href="/profile/location">ملفك</a> لعرض الأسواق المتاحة في منطقتك.</p>
+  </div>
+  {% elif not points | length %}
+  <div class="card market-empty-region">
+    <p class="market-empty-message">
+      نسأل الله أن نجد صدى في قلوب الناس ليعودوا لفطرتهم في منطقتك
+      {% if memberCity %}<strong> — {{ memberCity }}</strong>{% endif %}.
+    </p>
+  </div>
+  {% else %}
+  <p class="text-muted-sm mb-md">أسواق مدينة <strong>{{ memberCity }}</strong> — تظهر لك فقط أسواق نفس المدينة.</p>
+  <h2 class="section-title">الأسواق</h2>
+  {% for p in points %}
+  <div class="card market-card">
+    <h3>{{ p.name }}</h3>
+    <p>{{ p.region }} — {{ p.city }}</p>
+    {% if p.address or (p.lat and p.lng) %}
+    <p class="market-gps">
+      📍
+      {% if p.lat and p.lng %}
+      <a href="{{ mapsUrl(p.lat, p.lng) }}" target="_blank" rel="noopener" class="link-gold">
+        {{ p.address if p.address else ('GPS: ' ~ p.lat ~ '، ' ~ p.lng) }}
+      </a>
+      {% else %}
+      {{ p.address }}
+      {% endif %}
+    </p>
+    {% endif %}
+    {% if p.contact_phone %}<p>📞 {{ p.contact_phone }}</p>{% endif %}
+
+    {% set products = p.products %}
+    {% if products and products | length %}
+    <h4 class="market-products-title">المنتجات</h4>
+    <ul class="market-products-list">
+      {% for prod in products %}
+      <li>
+        <strong>{{ prod.name }}</strong>
+        {% if prod.price_note %}<span class="text-muted-sm"> — {{ prod.price_note }}</span>{% endif %}
+        {% if prod.description %}<br><small>{{ prod.description }}</small>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted-sm">لا منتجات معروضة في هذا السوق بعد.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

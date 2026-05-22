@@ -1,0 +1,46 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ level.name_ar }} — مكتبة الوعي{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/library.css">
+{% endblock %}
+{% block content %}
+<div class="wrap library-page">
+  <header class="library-level-head">
+    <span class="level-badge">{{ level.icon }} المستوى {{ level.level_number }}</span>
+    <h1 class="page-title">{{ level.name_ar }}</h1>
+    <p class="library-tagline">{{ level.description }}</p>
+    <form action="/library/search" method="get" class="library-search">
+      <input type="search" name="q" placeholder="بحث داخل الأرشيف" required minlength="2">
+      <button type="submit" class="btn btn-gold">بحث بالثواني</button>
+    </form>
+  </header>
+
+  {% for cat in categories %}
+  <section class="card library-cat-block">
+    <h2>{{ cat.name_ar }}</h2>
+    {% if cat.description %}<p class="cat-desc">{{ cat.description }}</p>{% endif %}
+    {% set vids = videos_by_cat[cat.id] if videos_by_cat[cat.id] else [] %}
+    {% if vids %}
+    <div class="video-list">
+      {% for v in vids %}
+      <a href="/library/video/{{ v.id }}" class="video-row">
+        <span class="video-play">▶</span>
+        <div class="video-info">
+          <strong>{{ v.title }}</strong>
+          {% if v.description %}<small>{{ v.description | excerpt(80) }}</small>{% endif %}
+        </div>
+        <span class="level-badge">{{ formatDuration(v.duration_seconds) }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-msg">قريباً — محتوى قيد الإضافة</p>
+    {% endif %}
+  </section>
+  {% else %}
+  <p class="empty-msg">لا تصنيفات في هذا المستوى بعد.</p>
+  {% endfor %}
+
+  <a href="/library" class="btn btn-outline mt-md">← العودة للمكتبة</a>
+</div>
+{% endblock %}

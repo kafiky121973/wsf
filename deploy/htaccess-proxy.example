@@ -1,0 +1,10 @@
+# انسخ إلى public_html/.htaccess (أو جذر الدومين) بعد تعديل المنفذ
+# يتطلب تفعيل mod_proxy على Apache (cPanel: often enabled)
+
+RewriteEngine On
+
+# لا تعرض محتوى المجلد — وجّه كل الطلبات لتطبيق Node
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+
+# إن كان التطبيق على منفذ آخر غيّر 3000

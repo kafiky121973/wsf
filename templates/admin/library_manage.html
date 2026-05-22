@@ -1,0 +1,225 @@
+﻿{% extends "base.html" %}
+{% block title %}إدارة المكتبة{% endblock %}
+{% block content %}
+<div class="wrap admin-grid">
+  <aside class="sidebar">
+    <a href="{{ url_for('admin.dashboard') }}">لوحة التحكم</a>
+    <a href="{{ url_for('admin.library_manage') }}">المكتبة</a>
+    <a href="{{ url_for('admin.knowledge') }}">أرشيف المعرفة</a>
+    <a href="{{ url_for('library.index') }}">عرض المكتبة</a>
+  </aside>
+  <section>
+    <h1 class="page-title">إدارة مكتبة الوعي</h1>
+
+    <div class="stats-grid">
+      <div class="stat-box"><div class="num">{{ stats.videos }}</div><div class="lbl">فيديو</div></div>
+      <div class="stat-box"><div class="num">{{ stats.published }}</div><div class="lbl">ظاهر</div></div>
+      <div class="stat-box"><div class="num">{{ stats.segments }}</div><div class="lbl">مقطع نصي</div></div>
+    </div>
+
+    <div class="card" id="videos-table">
+      <div class="card-head-row">
+        <h2>جدول الفيديوهات</h2>
+        <a href="#add-video" class="btn btn-gold btn-sm">+ إضافة فيديو</a>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>العنوان</th>
+              <th>التصنيف</th>
+              <th>المصدر</th>
+              <th>المدة</th>
+              <th>ترتيب</th>
+              <th>منشور</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for v in videos %}
+          <tr>
+            <td>{{ v.id }}</td>
+            <td>
+              <a href="/library/video/{{ v.id }}" class="link-gold" target="_blank" rel="noopener">{{ v.title }}</a>
+            </td>
+            <td><small>{{ v.level_name }} — {{ v.cat_name }}</small></td>
+            <td>{% if v.youtube_url %}YouTube{% elif v.video_path %}ملف{% else %}—{% endif %}</td>
+            <td>{{ formatDuration(v.duration_seconds) }}</td>
+            <td>{{ v.sort_order or 0 }}</td>
+            <td>{% if v.is_published %}<span class="level-badge">ظاهر</span>{% else %}<span class="text-muted-sm">مخفي</span>{% endif %}</td>
+            <td class="table-actions">
+              <a href="/admin/library/video/{{ v.id }}/edit" class="btn btn-outline btn-sm">تعديل</a>
+              <form method="post" action="/admin/library/{{ v.id }}/toggle" class="form-inline">
+                <button type="submit" class="btn btn-outline btn-sm">{% if v.is_published %}إخفاء{% else %}إظهار{% endif %}</button>
+              </form>
+              <form method="post" action="/admin/library/{{ v.id }}/delete" class="form-inline" onsubmit="return confirm('حذف الفيديو وجميع مقاطعه النصية؟');">
+                <button type="submit" class="btn btn-outline btn-sm">حذف</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-empty">لا فيديوهات.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="segments-table">
+      <div class="card-head-row">
+        <h2>جدول المحتوى النصي (video_transcript_segments)</h2>
+        <a href="#add-segment" class="btn btn-gold btn-sm">+ إضافة مقطع</a>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-data-table admin-segments-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>video_id</th>
+              <th>الفيديو</th>
+              <th>start_seconds</th>
+              <th>end_seconds</th>
+              <th>text</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for s in segments %}
+          <tr>
+            <td>{{ s.id }}</td>
+            <td>
+              <form id="seg-form-{{ s.id }}" method="post" action="/admin/library/segments/{{ s.id }}/update"></form>
+              <input form="seg-form-{{ s.id }}" type="number" name="video_id" value="{{ s.video_id }}" min="1" required class="input-sm input-num">
+            </td>
+            <td><small>{{ s.video_title }}</small></td>
+            <td>
+              <input form="seg-form-{{ s.id }}" type="number" name="start_seconds" value="{{ s.start_seconds }}" step="0.1" min="0" required class="input-sm input-num">
+            </td>
+            <td>
+              <input form="seg-form-{{ s.id }}" type="number" name="end_seconds" value="{{ s.end_seconds }}" step="0.1" min="0" required class="input-sm input-num">
+            </td>
+            <td>
+              <textarea form="seg-form-{{ s.id }}" name="text" rows="2" required class="segment-text-input">{{ s.text }}</textarea>
+            </td>
+            <td class="table-actions">
+              <button form="seg-form-{{ s.id }}" type="submit" class="btn btn-gold btn-sm">حفظ</button>
+              <form method="post" action="/admin/library/segments/{{ s.id }}/delete" class="form-inline" onsubmit="return confirm('حذف هذا المقطع؟');">
+                <button type="submit" class="btn btn-outline btn-sm">حذف</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="text-empty">لا مقاطع نصية — أضف من الأسفل أو استورد Excel.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="add-video">
+      <h2>إضافة فيديو</h2>
+      <form method="post" action="/admin/library/add" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>العنوان</label>
+          <input name="title" required placeholder="عنوان الفيديو">
+        </div>
+        <div class="form-group">
+          <label>التصنيف</label>
+          <select name="category_id" required>
+            {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.level_name }} — {{ c.name_ar }} ({{ c.slug }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>الوصف</label>
+          <textarea name="description" rows="2"></textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>رابط YouTube (اختياري)</label>
+            <input name="youtube_url" placeholder="https://youtube.com/watch?v=...">
+          </div>
+          <div class="form-group">
+            <label>المدة (ثواني)</label>
+            <input name="duration_seconds" type="number" min="0" value="600" placeholder="تُستخرج تلقائياً عند رفع ملف">
+            <small class="text-muted-sm">إذا رفعت ملف فيديو تُملأ المدة تلقائياً — لا حاجة لإدخالها.</small>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>ملف فيديو محلي (اختياري)</label>
+          <input type="file" name="video_file" accept="video/*">
+          <small class="text-muted-sm">ارفع الفيديو هنا — المدة تُستخرج تلقائياً. ألصق النص يدوياً في الحقل أدناه.</small>
+        </div>
+        <div class="form-group">
+          <label>النص الكامل (videos.transcript_text)</label>
+          <textarea name="transcript_text" rows="4"></textarea>
+        </div>
+        <label class="label-check">
+          <input type="checkbox" name="is_published" value="1" checked class="input-check">
+          إظهار في المكتبة فوراً
+        </label>
+        <button type="submit" class="btn btn-gold">إضافة</button>
+      </form>
+    </div>
+
+    <div class="card" id="add-segment">
+      <h2>إضافة مقطع نصي</h2>
+      <form method="post" action="/admin/library/segments/add">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>video_id — الفيديو</label>
+            <select name="video_id" required>
+              <option value="">— اختر —</option>
+              {% for v in videos %}
+              <option value="{{ v.id }}">{{ v.id }} — {{ v.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>start_seconds</label>
+            <input name="start_seconds" type="number" step="0.1" min="0" value="0" required>
+          </div>
+          <div class="form-group">
+            <label>end_seconds</label>
+            <input name="end_seconds" type="number" step="0.1" min="0" value="60" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>text</label>
+          <textarea name="text" rows="3" required placeholder="نص المقطع…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold">إضافة مقطع</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>استيراد من Excel</h2>
+      <p class="text-muted-sm mb-md">
+        القالب يحتوي أوراقاً مطابقة لقاعدة البيانات:
+        <strong>videos</strong>،
+        <strong>video_transcript_segments</strong>،
+        <strong>library_categories</strong>
+        (ورقة تعليمات).
+      </p>
+      <a href="/admin/library/template" class="btn btn-outline toolbar-btn">تحميل قالب فارغ (.xlsx)</a>
+      <div class="topic-template-links mt-md">
+        <p class="text-muted-sm mb-sm">قوالب جاهزة بصفوف مثال — عدّل ثم ارفع:</p>
+        {% for pack in topic_packs %}
+        <a href="/admin/library/template/{{ pack.key }}" class="btn btn-gold btn-sm">
+          {{ pack.label }} ({{ pack.videoCount }} فيديو · {{ pack.segmentCount }} مقطع)
+        </a>
+        {% endfor %}
+      </div>
+      <form method="post" action="/admin/library/import" enctype="multipart/form-data" class="mt-md">
+        <div class="form-group">
+          <label>ملف Excel بعد التعبئة</label>
+          <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+        </div>
+        <button type="submit" class="btn btn-outline">رفع واستيراد</button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

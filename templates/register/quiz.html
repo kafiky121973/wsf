@@ -1,0 +1,34 @@
+﻿{% extends "base.html" %}
+{% block title %}اختبار الوعي{% endblock %}
+{% block content %}
+<div class="wrap form-wide">
+  <h1 class="page-title">اختبار الوعي</h1>
+
+  {% if already_submitted %}
+  <div class="card">
+    <p class="text-success-msg">بانتظار مراجعة الرقباء</p>
+    <a href="/join/status" class="btn btn-gold mt-md">حالة العضوية</a>
+  </div>
+  {% else %}
+  <div class="card">
+    <form method="post">
+      {% include "partials/csrf.html" %}
+      {% for q in questions %}
+      <div class="form-group quiz-q-block">
+        <label>
+          <strong class="quiz-q-num">{{ loop.index }}.</strong> {{ q.question }}
+        </label>
+        <textarea
+          name="q_{{ q.id }}"
+          required
+          minlength="{{ q.min_chars or 50 }}"
+          rows="5"
+        >{{ saved_answers[q.id] if saved_answers else '' }}</textarea>
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-gold btn-block">إرسال الإجابات</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

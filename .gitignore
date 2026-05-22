@@ -1,0 +1,45 @@
+# ——— أسرار وبيئة ———
+.env
+.env.local
+.env.*.local
+
+# ——— Node ———
+node_modules/
+npm-debug.log*
+.yarn/
+
+# ——— قاعدة البيانات والملفات الحساسة (لا ترفع للمستودع) ———
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*conflicted*
+data/backup-*/
+data/email_log.txt
+data/vapid.json
+uploads/
+
+# محتوى data الاختياري للمستودع (احذف السطر التالي إن أردت استثناء rag):
+data/
+
+# ——— Python (اختياري) ———
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ——— نظام / IDE ———
+.DS_Store
+Thumbs.db
+*.log
+.cursor/
+.vscode/
+*.code-workspace
+
+# ——— حزم النشر المحلية ———
+*.zip
+
+# ——— ملفات شخصية / مؤقتة ———
+id.docx
+*.docx
+*.xlsx
+.get/

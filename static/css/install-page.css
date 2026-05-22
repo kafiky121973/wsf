@@ -1,0 +1,34 @@
+.install-banner-warn {
+  border-color: rgba(200, 120, 60, 0.6);
+  background: rgba(120, 60, 20, 0.15);
+}
+.install-banner-success {
+  border-color: rgba(80, 160, 100, 0.5);
+  background: rgba(40, 90, 50, 0.12);
+}
+.install-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1rem 1.15rem;
+}
+.install-sw-hint {
+  margin: 0;
+  flex: 1 1 100%;
+}
+.install-card-active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.25);
+}
+.install-visual-hint {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-gold);
+}
+.install-faq ul {
+  list-style: disc;
+  padding-right: 1.35rem;
+  line-height: 1.85;
+  color: var(--text-muted);
+}

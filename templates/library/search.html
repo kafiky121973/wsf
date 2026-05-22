@@ -1,0 +1,37 @@
+﻿{% extends "base.html" %}
+{% block title %}بحث المكتبة — الأرشيف السيادي{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/library.css">
+{% endblock %}
+{% block content %}
+<div class="wrap library-page">
+  <header class="library-hero">
+    <h1 class="page-title">البحث داخل الأرشيف</h1>
+    <p class="library-tagline">ابحث عن كلمة في نصوص الفيديوهات — ستظهر الدقيقة والثانية والمقطع.</p>
+  </header>
+  <div class="card">
+    <form method="get" class="library-search">
+      <input type="search" name="q" value="{{ query }}" placeholder="مثال: السكر، الدقيق، التطهير" required minlength="2" autofocus>
+      <button type="submit" class="btn btn-gold">بحث</button>
+    </form>
+  </div>
+
+  {% if query %}
+  <h2 class="results-title">نتائج «{{ query }}» — {{ results|length }} مقطع</h2>
+  {% for r in results %}
+  <div class="search-hit card-like">
+    <strong>{{ r.video_title }}</strong>
+    <span class="ts">{{ r.timestamp }}</span>
+    <p>{{ r.text }}</p>
+    <a href="/library/video/{{ r.video_id }}#t={{ r.start_seconds|int }}" class="btn btn-sm btn-outline">انتقل للمقطع</a>
+  </div>
+  {% else %}
+  <p class="empty-msg">لا نتائج — جرّب كلمة أخرى أو <a href="/library">تصفّح المستويات</a>.</p>
+  {% endfor %}
+  {% else %}
+  <p class="empty-msg text-muted">اكتب كلمة من حرفين على الأقل لبدء البحث في مقاطع النص.</p>
+  {% endif %}
+
+  <a href="/library" class="btn btn-outline mt-md">← العودة للمكتبة</a>
+</div>
+{% endblock %}

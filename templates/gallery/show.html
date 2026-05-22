@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title or 'شهادة' }}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/gallery.css">
+{% endblock %}
+{% block content %}
+<div class="wrap gallery-page">
+  <nav class="gallery-breadcrumb">
+    <a href="/gallery">معرض الشهادات</a> / <span>{{ post.title or 'شهادة' }}</span>
+  </nav>
+
+  {% set kind = mediaKind(post) %}
+  <article class="gallery-show card">
+    <header class="gallery-show-head">
+      <span class="level-badge">{% if post.post_type == 'video' %}فيديو{% else %}شهادة{% endif %}</span>
+      <h1 class="page-title">{{ post.title or 'شهادة' }}</h1>
+      <p class="gallery-show-meta">
+        <span class="signature">{{ displayAuthor(post) }}</span>
+        · <time>{{ post.created_at | fmtDateTime }}</time>
+      </p>
+    </header>
+
+    {% if kind == 'youtube' %}
+    <div class="gallery-player">
+      <iframe src="https://www.youtube.com/embed/{{ youtubeEmbedId(post.youtube_url) }}?rel=0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; picture-in-picture"></iframe>
+    </div>
+    {% elif kind == 'video' %}
+    <video controls class="gallery-player-native" src="/uploads/{{ post.media_path }}"></video>
+    {% elif kind == 'image' %}
+    <img class="gallery-show-image" src="/uploads/{{ post.media_path }}" alt="{{ post.title or '' }}">
+    {% endif %}
+
+    <div class="gallery-show-content">
+      <p>{{ post.content }}</p>
+    </div>
+  </article>
+
+  <div class="gallery-show-actions">
+    <a href="/gallery" class="btn btn-outline">← كل الشهادات</a>
+    {% if current_user and current_user.status == 'active' %}
+    <a href="/community/submit" class="btn btn-gold">رفع شهادة (عضو)</a>
+    {% else %}
+    <a href="/join" class="btn btn-outline">انضم لرفع شهادتك</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

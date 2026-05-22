@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}تحديث الموقع{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/geo.css">
+{% endblock %}
+{% block content %}
+<div class="wrap form-narrow">
+  <h1 class="page-title">تحديث الموقع</h1>
+  <div class="card card-gap">
+    <p class="text-lead">
+      <strong>{{ user.country or '—' }} — {{ user.city or '—' }} — {{ user.district or '—' }}</strong>
+      {% if user.location_updated_at %}<br><small>{{ user.location_updated_at | fmtDateTime }}</small>{% endif %}
+    </p>
+  </div>
+  <div class="card">
+    <form method="post" action="/profile/location" id="location-form">
+      <input type="hidden" name="return_to" value="{{ return_to }}">
+      <input type="hidden" name="location_locked" id="location_locked" value="">
+      <input type="hidden" name="location_source" id="location_source" value="">
+      <input type="hidden" name="lat" id="lat" value="{{ user.lat if user.lat is not none else '' }}">
+      <input type="hidden" name="lng" id="lng" value="{{ user.lng if user.lng is not none else '' }}">
+
+      <div class="geo-step">
+        <button type="button" id="btn-geo" class="btn btn-gold geo-btn">تحديد الموقع</button>
+        <div id="geo-status" class="geo-status geo-status-mt" aria-live="polite"></div>
+        <div class="form-group form-group-tight">
+          <label>الدولة</label>
+          <input name="country" id="country" readonly required value="{{ user.country or '' }}">
+        </div>
+        <div class="form-group mb-0">
+          <label>المدينة</label>
+          <input name="city" id="city" readonly required value="{{ user.city or '' }}">
+        </div>
+        <div class="form-group">
+          <label>الحي</label>
+          <input name="district" id="district" readonly required value="{{ user.district or '' }}">
+        </div>
+      </div>
+      <button type="submit" id="btn-submit" class="btn btn-gold btn-block mt-md" disabled>حفظ</button>
+    </form>
+    <a href="{{ return_to }}" class="btn btn-outline geo-cancel">إلغاء</a>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/js/geolocation.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  ShifraGeo.bindForm({
+    form: document.getElementById("location-form"),
+    triggerBtn: document.getElementById("btn-geo"),
+    submitBtn: document.getElementById("btn-submit"),
+    statusEl: document.getElementById("geo-status"),
+    latInput: document.getElementById("lat"),
+    lngInput: document.getElementById("lng"),
+    countryInput: document.getElementById("country"),
+    cityInput: document.getElementById("city"),
+    districtInput: document.getElementById("district"),
+    lockedInput: document.getElementById("location_locked"),
+    sourceInput: document.getElementById("location_source"),
+    allowExisting: true
+  });
+});
+</script>
+{% endblock %}

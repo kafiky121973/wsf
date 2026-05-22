@@ -1,0 +1,81 @@
+﻿{% extends "base.html" %}
+
+{% block title %}صلاحيات الأدوار{% endblock %}
+
+{% block content %}
+
+<div class="wrap admin-grid">
+
+  <aside class="sidebar">
+
+    <a href="/admin">لوحة التحكم</a>
+
+    <a href="/admin/users">إدارة الأعضاء</a>
+
+    <a href="/admin/owner-messages">مراسلة الأعضاء</a>
+
+    <a href="/admin/newsletter">جرعات الوعي</a>
+
+    <a href="/admin/nav-menus">قوائم التنقل</a>
+    <a href="/admin/permissions" class="active">صلاحيات الموارد</a>
+
+  </aside>
+
+  <section>
+
+    <h1 class="page-title">منح الصلاحيات حسب الدور</h1>
+
+    <p class="text-muted-sm mb-md">
+
+      تخصّص ما يمكن لكل دور (عضو، مشرف، كادر…) الوصول إليه: قراءة، كتابة، حذف.
+
+      لتعيين <strong>دور شخص</strong> (مدير، مشرف، عضو…) استخدم
+
+      <a href="/admin/users">قائمة المسجّلين</a>.
+
+    </p>
+
+    {% for p in permissions %}
+
+    <div class="card card-gap perm-card">
+
+      <form method="post" action="/admin/permissions/update" class="perm-form">
+
+        <input type="hidden" name="perm_id" value="{{ p.id }}">
+
+        <div class="perm-form-head">
+
+          <strong>{{ role_labels[p.role] or p.role }}</strong>
+
+          <span class="text-muted-sm"> — {{ resource_labels[p.resource] or p.resource }}</span>
+
+        </div>
+
+        <div class="perm-form-checks">
+
+          <label class="label-check-inline"><input type="checkbox" name="can_read" {% if p.can_read %}checked{% endif %}> قراءة</label>
+
+          <label class="label-check-inline"><input type="checkbox" name="can_write" {% if p.can_write %}checked{% endif %}> كتابة</label>
+
+          <label class="label-check-inline"><input type="checkbox" name="can_delete" {% if p.can_delete %}checked{% endif %}> حذف</label>
+
+          <button type="submit" class="btn btn-sm btn-gold">تحديث</button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    {% else %}
+
+    <p class="text-empty">لا صلاحيات معرّفة — أعد تهيئة قاعدة البيانات أو راجع التثبيت.</p>
+
+    {% endfor %}
+
+  </section>
+
+</div>
+
+{% endblock %}
+

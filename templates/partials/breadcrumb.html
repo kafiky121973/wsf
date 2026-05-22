@@ -1,0 +1,12 @@
+{% if breadcrumbs and breadcrumbs.length %}
+<nav class="site-breadcrumb wrap" aria-label="مسار الصفحات">
+  {% for item in breadcrumbs %}
+    {% if not loop.first %}<span class="bc-sep" aria-hidden="true">/</span>{% endif %}
+    {% if item.url %}
+    <a href="{{ item.url }}">{{ item.label }}</a>
+    {% else %}
+    <span class="bc-current" aria-current="page">{{ item.label }}</span>
+    {% endif %}
+  {% endfor %}
+</nav>
+{% endif %}

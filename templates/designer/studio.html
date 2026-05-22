@@ -1,0 +1,24 @@
+﻿{% extends "base.html" %}
+{% block title %}استوديو المصمم{% endblock %}
+{% block content %}
+<div class="wrap page-studio">
+  <h1 class="page-title">استوديو المصمم</h1>
+  <p class="text-muted mb-lg">عدّل ألوان وخطوط «شفرة الفطرة» لتبقى فخمة كملوك الحصن.</p>
+  <div class="card">
+    <form method="post" action="/designer/save">
+      {% for key, label in theme_keys %}
+      <div class="form-group">
+        <label>{{ label }}</label>
+        {% if key == 'primary_color' or key == 'secondary_color' or key == 'accent_color' %}
+        <input type="color" name="{{ key }}" value="{{ settings[key] or '#C9A227' }}" class="color-input">
+        {% else %}
+        <input name="{{ key }}" value="{{ settings[key] or '' }}">
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-gold">حفظ المظهر</button>
+    </form>
+  </div>
+  <a href="/" class="btn btn-outline mt-md">معاينة الرئيسية</a>
+</div>
+{% endblock %}
