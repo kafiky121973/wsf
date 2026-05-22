@@ -44,6 +44,22 @@
     if (openSafariBtn) openSafariBtn.hidden = true;
   }
 
+  function resolveInstallMode() {
+    if (deferredPrompt) return "native";
+    if (isInAppBrowser()) return "inapp";
+    if (isIos()) return "ios";
+    return "manual";
+  }
+
+  function openInstallSheet() {
+    if (isInstalled()) return;
+    localStorage.removeItem("shifra_pwa_dismissed");
+    showInstallBar(resolveInstallMode());
+    if (installBar) {
+      installBar.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
   function showInstallBar(mode) {
     if (!installBar || isInstalled()) return;
     if (localStorage.getItem("shifra_pwa_dismissed") === "1") return;
@@ -81,24 +97,7 @@
     btn.className = "btn btn-sm btn-outline pwa-header-install";
     btn.setAttribute("aria-label", "تثبيت التطبيق");
     btn.textContent = "تثبيت";
-    btn.addEventListener("click", function () {
-      localStorage.removeItem("shifra_pwa_dismissed");
-      if (deferredPrompt) {
-        showInstallBar("native");
-        installBtn && installBtn.click();
-        return;
-      }
-      if (isIos() || isInAppBrowser()) {
-        window.location.href = "/install";
-        return;
-      }
-      if (installBar && !installBar.hidden) {
-        showInstallBar("manual");
-        installBar.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      } else {
-        window.location.href = "/install";
-      }
-    });
+    btn.addEventListener("click", openInstallSheet);
     var toggle = document.getElementById("nav-toggle");
     if (toggle) inner.insertBefore(btn, toggle);
     else inner.appendChild(btn);
@@ -114,15 +113,6 @@
     e.preventDefault();
     deferredPrompt = e;
     window.__shifraDeferredInstall = e;
-    showInstallBar("native");
-  });
-
-  window.addEventListener("appinstalled", function () {
-    localStorage.setItem("shifra_pwa_installed", "1");
-    deferredPrompt = null;
-    hideInstallBar();
-    var hb = document.getElementById("pwa-header-install");
-    if (hb) hb.remove();
   });
 
   if (installBtn) {
@@ -130,11 +120,8 @@
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(function (choice) {
-        if (choice.outcome === "accepted") {
-          localStorage.setItem("shifra_pwa_installed", "1");
-          hideInstallBar();
-        }
-        deferredPrompt = null;
+        if (choice.outcome === "accepted") onInstalled();
+        else deferredPrompt = null;
       });
     });
   }
@@ -159,17 +146,25 @@
     });
   }
 
+  function onInstalled() {
+    localStorage.setItem("shifra_pwa_installed", "1");
+    deferredPrompt = null;
+    hideInstallBar();
+    var hb = document.getElementById("pwa-header-install");
+    if (hb) hb.remove();
+    window.dispatchEvent(new Event("shifra-pwa-installed"));
+  }
+
   registerServiceWorker();
   addHeaderInstallBtn();
 
-  window.setTimeout(function () {
-    if (isInstalled() || deferredPrompt) return;
-    if (isIos()) {
-      showInstallBar(isInAppBrowser() ? "inapp" : "ios");
-    } else if (!window.matchMedia("(display-mode: browser)").matches) {
-      /* noop */
-    } else {
-      showInstallBar("manual");
-    }
-  }, 2500);
+  window.addEventListener("appinstalled", onInstalled);
+
+  try {
+    window.matchMedia("(display-mode: standalone)").addEventListener("change", function (ev) {
+      if (ev.matches) onInstalled();
+    });
+  } catch (_) {
+    /* ignore */
+  }
 })();
