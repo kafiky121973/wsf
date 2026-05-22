@@ -14,7 +14,7 @@ if (fs.existsSync(envPath)) {
 const express = require("express");
 const nunjucks = require("nunjucks");
 const bcrypt = require("bcryptjs");
-const { getDb, initDb, getTheme } = require("./lib/db");
+const { getDb, initDb, getTheme, getDriver, dbReady } = require("./lib/db");
 const { generateAiResponse, searchKnowledge, buildChatResponse } = require("./lib/ai");
 const { llmStatus } = require("./lib/llm");
 const { recordFeedback } = require("./lib/chat-feedback");
@@ -215,7 +215,11 @@ const ROLE_LABELS = {
 };
 const ROLES = ["admin", "supervisor", "designer", "cadre", "member", "pending"];
 
-const { ready: sqliteReady } = require("./lib/sqlite-driver");
+const {
+  getDatabaseForm,
+  saveDatabaseSettings,
+  testDatabaseConnection,
+} = require("./lib/database-settings");
 
 function main() {
 const app = express();
@@ -2205,8 +2209,15 @@ app.get("/admin/system", requireLogin, requireRoles("admin", "supervisor"), (req
   try {
     const system = buildSystemChecks(db);
     const settings = getSettingsForm(db);
+    const database = getDatabaseForm();
     const can_edit = req.session.role === "admin";
-    render(req, res, "admin/system.html", { system, settings, can_edit, admin_nav: "system" });
+    render(req, res, "admin/system.html", {
+      system,
+      settings,
+      database,
+      can_edit,
+      admin_nav: "system",
+    });
   } finally {
     db.close();
   }
@@ -2218,6 +2229,16 @@ app.post("/admin/system", requireLogin, requireRoles("admin"), async (req, res) 
     if (req.body.action === "clear") {
       clearAppSettings(db);
       flash(req, "success", "أُزيلت إعدادات لوحة الإدارة — يُستخدم ما في Hostinger فقط.");
+      return res.redirect("/admin/system");
+    }
+    if (req.body.action === "database_save") {
+      const r = saveDatabaseSettings(req.body);
+      flash(req, r.ok ? "success" : "danger", r.ok ? r.message : r.error);
+      return res.redirect("/admin/system");
+    }
+    if (req.body.action === "database_test") {
+      const r = testDatabaseConnection(req.body);
+      flash(req, r.ok ? "success" : "danger", r.ok ? r.message : r.error);
       return res.redirect("/admin/system");
     }
     const r = saveAppSettings(db, req.body);
@@ -3061,9 +3082,13 @@ app.get("/health", (_req, res) => {
   const db = getDb();
   try {
     const { cfg } = require("./lib/app-config").getAppConfig(db);
+    const { loadDatabaseConfig, mysqlConfigured } = require("./lib/database-config");
+    const dbCfg = loadDatabaseConfig();
     res.json({
       ok: true,
       env: process.env.NODE_ENV || "development",
+      db_driver: getDriver(),
+      mysql: dbCfg.driver === "mysql" ? mysqlConfigured(dbCfg) : null,
       smtp: smtpConfigured(db),
       site_url: cfg.SITE_URL || null,
     });
@@ -3084,14 +3109,6 @@ validateProductionConfig();
 const HOST =
   process.env.BIND_HOST ||
   (isProduction() || process.env.HOSTINGER === "1" ? "0.0.0.0" : "0.0.0.0");
-initDb();
-const dbBoot = getDb();
-try {
-  const n = runAutoActivationGrace(dbBoot);
-  if (n > 0) console.log(`[members] تفعيل تلقائي عند الإقلاع: ${n} حساب`);
-} finally {
-  dbBoot.close();
-}
   reloadRag();
   if (!smtpConfigured()) {
     console.warn(
@@ -3117,8 +3134,18 @@ try {
 });
 }
 
-sqliteReady()
-  .then(main)
+dbReady()
+  .then(() => {
+    initDb();
+    const dbBoot = getDb();
+    try {
+      const n = runAutoActivationGrace(dbBoot);
+      if (n > 0) console.log(`[members] تفعيل تلقائي عند الإقلاع: ${n} حساب`);
+    } finally {
+      dbBoot.close();
+    }
+    main();
+  })
   .catch((err) => {
     console.error("\n❌ فشل تشغيل قاعدة البيانات:", err.message || err);
     process.exit(1);

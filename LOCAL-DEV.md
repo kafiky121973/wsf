@@ -26,3 +26,12 @@ git push origin master
 ```
 
 Hostinger يقرأ من GitHub — بعد `push` نفّذ **Redeploy** من لوحة Node.js.
+
+## قاعدة البيانات
+
+| البيئة | الافتراضي |
+|--------|-----------|
+| محلياً | **SQLite** — `data/shifra.db` (لا تحتاج MySQL على الجهاز) |
+| Hostinger | **MySQL** — تضبطه أنت من `/admin/system` أو Environment Variables |
+
+راجع `deploy/MYSQL.md` عند النشر.

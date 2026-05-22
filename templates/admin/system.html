@@ -14,7 +14,55 @@
 
     {% if can_edit %}
     <div class="card mb-md">
-      <h2 class="h3">تعديل الإعدادات</h2>
+      <h2 class="h3">قاعدة البيانات (MySQL)</h2>
+      <p class="text-muted-sm mb-md">
+        للإنتاج على Hostinger: أنشئ قاعدة MySQL من لوحة الاستضافة، ثم اختر <strong>MySQL</strong> واحفظ.
+        بعد الحفظ نفّذ <strong>Redeploy</strong>. لنقل البيانات من SQLite شغّل
+        <code>node scripts/migrate-sqlite-to-mysql.js</code> على السيرفر.
+      </p>
+      <form method="post" action="/admin/system" class="system-settings-form mb-md">
+        {% include "partials/csrf.html" %}
+        <input type="hidden" name="action" value="database_save">
+        <div class="form-group">
+          <label>نوع القاعدة</label>
+          <select name="db_driver">
+            <option value="sqlite"{% if database.db_driver != 'mysql' %} selected{% endif %}>SQLite (ملف data/shifra.db)</option>
+            <option value="mysql"{% if database.db_driver == 'mysql' %} selected{% endif %}>MySQL (خادم منفصل)</option>
+          </select>
+        </div>
+        <div class="form-row-split">
+          <div class="form-group">
+            <label>MYSQL_HOST</label>
+            <input name="mysql_host" value="{{ database.mysql_host }}" placeholder="127.0.0.1 أو srvXXX.hstgr.io">
+          </div>
+          <div class="form-group">
+            <label>MYSQL_PORT</label>
+            <input name="mysql_port" value="{{ database.mysql_port }}" placeholder="3306">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>MYSQL_USER</label>
+          <input name="mysql_user" value="{{ database.mysql_user }}">
+        </div>
+        <div class="form-group">
+          <label>MYSQL_DATABASE</label>
+          <input name="mysql_database" value="{{ database.mysql_database }}" placeholder="u123_shifra">
+        </div>
+        <div class="form-group">
+          <label>MYSQL_PASSWORD</label>
+          <input name="mysql_pass" type="password" autocomplete="new-password" placeholder="{% if database.mysql_pass_set %}اتركه فارغاً للإبقاء{% else %}كلمة مرور قاعدة البيانات{% endif %}">
+        </div>
+        <button type="submit" class="btn btn-gold">حفظ إعدادات القاعدة</button>
+      </form>
+      <form method="post" action="/admin/system" style="display:inline">
+        {% include "partials/csrf.html" %}
+        <input type="hidden" name="action" value="database_test">
+        <button type="submit" class="btn btn-outline btn-sm">اختبار اتصال MySQL</button>
+      </form>
+    </div>
+
+    <div class="card mb-md">
+      <h2 class="h3">البريد والموقع</h2>
       <form method="post" action="/admin/system" class="system-settings-form">
         {% include "partials/csrf.html" %}
         <div class="form-group">

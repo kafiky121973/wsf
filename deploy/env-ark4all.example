@@ -3,6 +3,14 @@
 
 NODE_ENV=production
 SITE_URL=https://ark4all.com
+
+# ——— قاعدة البيانات (MySQL على Hostinger — أو اضبط من /admin/system) ———
+# DB_DRIVER=mysql
+# MYSQL_HOST=127.0.0.1
+# MYSQL_PORT=3306
+# MYSQL_USER=u123456_shifra
+# MYSQL_PASSWORD=كلمة_مرور_قاعدة_البيانات
+# MYSQL_DATABASE=u123456_shifra
 SECRET_KEY=ضع_مفتاحاً_عشوائياً_طويلاً_هنا
 COOKIE_SECURE=true
 FORCE_HTTPS=true
