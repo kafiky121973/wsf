@@ -17,7 +17,7 @@ Write-Host "To:   $Target"
 New-Item -ItemType Directory -Force -Path $Target | Out-Null
 
 robocopy $Root $Target /MIR /NFL /NDL /NJH /NJS /nc /ns /np `
-  /XD node_modules .git __pycache__ .venv venv uploads "data\backup-*" `
+  /XD node_modules .git __pycache__ .venv venv uploads `
   /XF *.db *.db-wal *.db-shm .env .env.local *.log | Out-Null
 
 # robocopy: 0-7 = success (copied / extras); 8+ = error
